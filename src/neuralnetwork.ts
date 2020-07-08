@@ -41,9 +41,9 @@ export default class NeuralNetwork {
     //     }
     // }
 
-    train(inputsArr: number[], expectedArr: number[][]): void {
+    train(inputsArr: number[], expectedArr: number[]): void {
         let outputs = this.feedForward(inputsArr);
-        let expected = Matrix.load(expectedArr);
+        let expected = Matrix.fromArray(expectedArr);
         let error = Matrix.sub(expected, outputs);
         let gradients: Matrix;
         let layerWeightDeltas: Matrix;
