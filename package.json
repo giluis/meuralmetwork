@@ -1,0 +1,22 @@
+{
+  "name": "meuralmetwork",
+  "version": "2.3.2",
+  "description": "modelling a neural network ",
+  "main": "built/index.js",
+  "types": "built/index.d.ts",
+  "files": [
+    "built/**/*"
+  ],
+  "scripts": {
+    "start": "node ./built/app.js",
+    "test": "node ./built/tests/app.test.js",
+    "build": "tsc"
+  },
+  "author": "macholatino45",
+  "license": "ISC",
+  "dependencies": {
+    "@types/underscore": "^1.10.4",
+    "source-map-support": "^0.5.19",
+    "typescript": "^3.9.5"
+  }
+}
