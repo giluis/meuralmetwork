@@ -41,8 +41,9 @@ export default class NeuralNetwork {
     //     }
     // }
 
-    train(inputs: Matrix, expected: Matrix): void {
-        let outputs = this.feedForward(inputs);
+    train(inputsArr: number[], expectedArr: number[][]): void {
+        let outputs = this.feedForward(inputsArr);
+        let expected = Matrix.load(expectedArr);
         let error = Matrix.sub(expected, outputs);
         let gradients: Matrix;
         let layerWeightDeltas: Matrix;
@@ -69,54 +70,6 @@ export default class NeuralNetwork {
         }
     }
 
-
-    /**
-     * Runs inputs through network. Adjusts weights and biases
-     * according to backprogagation logic
-     * @param inputs inputs to train on
-     * @param expected expected output
-     */
-    train1(inputs: Matrix, expected: Matrix): void {
-        let outputs = this.feedForward(inputs);
-
-        //calculate output error
-        let output_error = Matrix.sub(expected, outputs);
-
-        //calculate gradients
-        let gradients_o = Matrix.map(outputs, v => v * (1 - v))
-        gradients_o = Matrix.hadamard(gradients_o, output_error);
-        gradients_o = Matrix.multScalar(gradients_o, this.learningRate);
-
-        //calculate deltas
-        let hidden_transposed = Matrix.transpose(this.layers[1]);
-        let weight_ho_deltas = Matrix.mult(gradients_o, hidden_transposed);
-
-        //adjust the weights
-        this.weights[1] = Matrix.add(this.weights[1], weight_ho_deltas);
-        //adjust the biases (difference is just the bias)
-        this.biases[1] = Matrix.add(this.biases[1], gradients_o);
-
-
-
-        //calculate hidden error
-        let weights_ho_t = Matrix.transpose(this.weights[1]);
-        let hidden_errors = Matrix.mult(weights_ho_t, output_error);
-
-        //calculate hidden gradient 
-        let hidden_gradient = Matrix.map(this.layers[1], (v) => v * (1 - v));
-        hidden_gradient = Matrix.hadamard(hidden_gradient, hidden_errors);
-        hidden_gradient = Matrix.multScalar(hidden_gradient, this.learningRate);
-
-        //Calculate input-> hidden weight deltas   
-        let inputs_t = Matrix.transpose(inputs);
-        let weights_ih_deltas = Matrix.mult(hidden_gradient, inputs_t);
-
-        //adjust the weights
-        this.weights[0] = Matrix.add(this.weights[0], weights_ih_deltas);
-        //adjust the biases (difference is just the gradient)
-        this.biases[0] = Matrix.add(this.biases[0], hidden_gradient);
-
-    }
 
     /**
      * 
@@ -147,7 +100,8 @@ export default class NeuralNetwork {
      * Implements feed forward algorythm
      * @param inputs inputs to feed to the nn
      */
-    feedForward(inputs: Matrix): Matrix {
+    feedForward(inputsArr: number[]): Matrix {
+        let inputs = Matrix.fromArray(inputsArr);
         if (!this.areInputsValid(inputs))
             throw "shit inputs"
         let layer = inputs;

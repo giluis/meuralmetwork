@@ -127,7 +127,6 @@ var Matrix = /** @class */ (function () {
      * @returns result of multiplication
      */
     Matrix.mult = function (m1, m2) {
-        debugger;
         if (!m1 || !m2)
             throw 'mult failed: Matrices were not defined';
         if (m1.isEmpty() || m2.isEmpty())
@@ -135,7 +134,6 @@ var Matrix = /** @class */ (function () {
         if (m1.numCols !== m2.numRows)
             throw 'mult failed: m1.numCols != m2.numRows';
         var data = [];
-        debugger;
         for (var i = 0; i < m1.numRows; i++) {
             data.push([]);
             for (var k = 0; k < m2.numCols; k++) { //for each column in m2

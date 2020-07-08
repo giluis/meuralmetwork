@@ -1,3 +1,5 @@
+
+
 export default class Matrix{
     numRows: number;
     numCols: number;
@@ -150,7 +152,6 @@ export default class Matrix{
      * @returns result of multiplication
      */
     static mult(m1: Matrix, m2: Matrix): Matrix {
-        debugger;
         if (!m1 || !m2)
             throw 'mult failed: Matrices were not defined';
 
@@ -160,7 +161,6 @@ export default class Matrix{
         if (m1.numCols !== m2.numRows)
             throw 'mult failed: m1.numCols != m2.numRows'
         let data = [];
-        debugger;
         for (let i = 0; i < m1.numRows; i++) {
             data.push([]);
             for (let k = 0; k < m2.numCols; k++) {//for each column in m2
