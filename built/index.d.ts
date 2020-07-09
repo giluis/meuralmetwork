@@ -1,3 +1,7 @@
 import NeuralNetwork from "./neuralnetwork";
 import Matrix from "./matrix";
-export { Matrix, NeuralNetwork };
+declare const _default: {
+    Matrix: typeof Matrix;
+    NeuralNetwork: typeof NeuralNetwork;
+};
+export default _default;

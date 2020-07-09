@@ -15,14 +15,7 @@ export default class NeuralNetwork {
      * @param inputs inputs to train on
      * @param expected expected output
      */
-    train(inputs: Matrix, expected: Matrix): void;
-    /**
-     * Runs inputs through network. Adjusts weights and biases
-     * according to backprogagation logic
-     * @param inputs inputs to train on
-     * @param expected expected output
-     */
-    train1(inputs: Matrix, expected: Matrix): void;
+    train(inputsArr: number[], expectedArr: number[]): void;
     /**
      *
      * @param guess Matriz que representa o guess da NN
@@ -34,7 +27,7 @@ export default class NeuralNetwork {
      * Implements feed forward algorythm
      * @param inputs inputs to feed to the nn
      */
-    feedForward(inputs: Matrix): Matrix;
+    feedForward(inputsArr: number[]): Matrix;
     setLayer(index: number, values: Matrix): void;
     /**
      * Prompts weights and biases

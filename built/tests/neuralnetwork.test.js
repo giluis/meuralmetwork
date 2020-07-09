@@ -46,10 +46,10 @@ function testTrainWithXorMultipleLayers() {
         var sample = aux_js_1.pickRandom(trainingData);
         nn.train(sample.inputs, sample.expected);
     }
-    nn.feedForward(matrix_js_1.default.fromArray([1, 0])).print("1 XOR 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 0])).print("0 XOR 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 1])).print("0 XOR 1");
-    nn.feedForward(matrix_js_1.default.fromArray([1, 1])).print("1 XOR 1");
+    nn.feedForward([1, 0]).print("1 XOR 0");
+    nn.feedForward([0, 0]).print("0 XOR 0");
+    nn.feedForward([0, 1]).print("0 XOR 1");
+    nn.feedForward([1, 1]).print("1 XOR 1");
 }
 function testTrainWithAnd() {
     console.log("\n\tTest train with and");
@@ -76,10 +76,10 @@ function testTrainWithAnd() {
         var sample = aux_js_1.pickRandom(trainingData);
         nn.train(sample.inputs, sample.expected);
     }
-    nn.feedForward(matrix_js_1.default.fromArray([1, 0])).print("1 AND 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 0])).print("0 AND 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 1])).print("0 AND 1");
-    nn.feedForward(matrix_js_1.default.fromArray([1, 1])).print("1 AND 1");
+    nn.feedForward([1, 0]).print("1 AND 0");
+    nn.feedForward([0, 0]).print("0 AND 0");
+    nn.feedForward([0, 1]).print("0 AND 1");
+    nn.feedForward([1, 1]).print("1 AND 1");
 }
 function testTrainWithXor() {
     console.log("\n\tTest train with XOR");
@@ -106,10 +106,10 @@ function testTrainWithXor() {
         var sample = aux_js_1.pickRandom(trainingData);
         nn.train(sample.inputs, sample.expected);
     }
-    nn.feedForward(matrix_js_1.default.fromArray([1, 0])).print("1 XOR 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 0])).print("0 XOR 0");
-    nn.feedForward(matrix_js_1.default.fromArray([0, 1])).print("0 XOR 1");
-    nn.feedForward(matrix_js_1.default.fromArray([1, 1])).print("1 XOR 1");
+    nn.feedForward([1, 0]).print("1 XOR 0");
+    nn.feedForward([0, 0]).print("0 XOR 0");
+    nn.feedForward([0, 1]).print("0 XOR 1");
+    nn.feedForward([1, 1]).print("1 XOR 1");
 }
 function testFeedForwardSetLayers() {
     console.log("\n\tTest feedForwardSetLayers");
@@ -135,11 +135,11 @@ function testFeedForwardSetLayers() {
     };
     var nn = new neuralnetwork_1.default(2, 2, 2, 1);
     nn.set(data);
-    var inputs = matrix_js_1.default.fromArray([1, 0]);
+    var inputs = [1, 0];
     var outputs = nn.feedForward(inputs);
-    var hidden1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(data.weights[0], inputs), data.biases[0]), aux_js_1.sigmoid);
+    var hidden1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(data.weights[0], matrix_js_1.default.fromArray(inputs)), data.biases[0]), aux_js_1.sigmoid);
     var hidden2 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(data.weights[1], hidden1), data.biases[1]), aux_js_1.sigmoid);
-    assertions_js_1.assertMatrixEquals(inputs, nn.layers[0]);
+    assertions_js_1.assertMatrixEquals(matrix_js_1.default.fromArray(inputs), nn.layers[0]);
     assertions_js_1.assertMatrixEquals(hidden1, nn.layers[1]);
     assertions_js_1.assertMatrixEquals(hidden2, nn.layers[2]);
     assertions_js_1.assertMatrixEquals(outputs, nn.layers[3]);
@@ -212,8 +212,8 @@ function testFeedForward4Layers() {
     nn.print();
     var weights = data.weights;
     var biases = data.biases;
-    var inputs = matrix_js_1.default.fromArray([1, 3]);
-    var l1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[0], inputs), biases[0]), aux_js_1.sigmoid);
+    var inputs = [1, 3];
+    var l1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[0], matrix_js_1.default.fromArray(inputs)), biases[0]), aux_js_1.sigmoid);
     var l2 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[1], l1), biases[1]), aux_js_1.sigmoid);
     var o = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[2], l2), biases[2]), aux_js_1.sigmoid);
     l1.print("Layer1");
@@ -266,9 +266,9 @@ function testFeedForward3Layers() {
     //         ]
     //     )
     // ]
-    var inputs = matrix_js_1.default.fromArray([1, 2, 3, 4]);
+    var inputs = [1, 2, 3, 4];
     console.log("Some error1");
-    var l1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[0], inputs), biases[0]), aux_js_1.sigmoid);
+    var l1 = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[0], matrix_js_1.default.fromArray(inputs)), biases[0]), aux_js_1.sigmoid);
     console.log("Some error2");
     var expected = matrix_js_1.default.map(matrix_js_1.default.add(matrix_js_1.default.mult(weights[1], l1), biases[1]), aux_js_1.sigmoid);
     console.log("Some error3");

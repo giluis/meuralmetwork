@@ -32,8 +32,9 @@ var NeuralNetwork = /** @class */ (function () {
     //         this.weights[i] = Matrix.add(this.weights[i],gradient);
     //     }
     // }
-    NeuralNetwork.prototype.train = function (inputs, expected) {
-        var outputs = this.feedForward(inputs);
+    NeuralNetwork.prototype.train = function (inputsArr, expectedArr) {
+        var outputs = this.feedForward(inputsArr);
+        var expected = matrix_js_1.default.fromArray(expectedArr);
         var error = matrix_js_1.default.sub(expected, outputs);
         var gradients;
         var layerWeightDeltas;
@@ -57,42 +58,6 @@ var NeuralNetwork = /** @class */ (function () {
         }
     };
     /**
-     * Runs inputs through network. Adjusts weights and biases
-     * according to backprogagation logic
-     * @param inputs inputs to train on
-     * @param expected expected output
-     */
-    NeuralNetwork.prototype.train1 = function (inputs, expected) {
-        var outputs = this.feedForward(inputs);
-        //calculate output error
-        var output_error = matrix_js_1.default.sub(expected, outputs);
-        //calculate gradients
-        var gradients_o = matrix_js_1.default.map(outputs, function (v) { return v * (1 - v); });
-        gradients_o = matrix_js_1.default.hadamard(gradients_o, output_error);
-        gradients_o = matrix_js_1.default.multScalar(gradients_o, this.learningRate);
-        //calculate deltas
-        var hidden_transposed = matrix_js_1.default.transpose(this.layers[1]);
-        var weight_ho_deltas = matrix_js_1.default.mult(gradients_o, hidden_transposed);
-        //adjust the weights
-        this.weights[1] = matrix_js_1.default.add(this.weights[1], weight_ho_deltas);
-        //adjust the biases (difference is just the bias)
-        this.biases[1] = matrix_js_1.default.add(this.biases[1], gradients_o);
-        //calculate hidden error
-        var weights_ho_t = matrix_js_1.default.transpose(this.weights[1]);
-        var hidden_errors = matrix_js_1.default.mult(weights_ho_t, output_error);
-        //calculate hidden gradient 
-        var hidden_gradient = matrix_js_1.default.map(this.layers[1], function (v) { return v * (1 - v); });
-        hidden_gradient = matrix_js_1.default.hadamard(hidden_gradient, hidden_errors);
-        hidden_gradient = matrix_js_1.default.multScalar(hidden_gradient, this.learningRate);
-        //Calculate input-> hidden weight deltas   
-        var inputs_t = matrix_js_1.default.transpose(inputs);
-        var weights_ih_deltas = matrix_js_1.default.mult(hidden_gradient, inputs_t);
-        //adjust the weights
-        this.weights[0] = matrix_js_1.default.add(this.weights[0], weights_ih_deltas);
-        //adjust the biases (difference is just the gradient)
-        this.biases[0] = matrix_js_1.default.add(this.biases[0], hidden_gradient);
-    };
-    /**
      *
      * @param guess Matriz que representa o guess da NN
      * @param expected  Matriz que representa o resultado esperado
@@ -108,7 +73,8 @@ var NeuralNetwork = /** @class */ (function () {
      * Implements feed forward algorythm
      * @param inputs inputs to feed to the nn
      */
-    NeuralNetwork.prototype.feedForward = function (inputs) {
+    NeuralNetwork.prototype.feedForward = function (inputsArr) {
+        var inputs = matrix_js_1.default.fromArray(inputsArr);
         if (!this.areInputsValid(inputs))
             throw "shit inputs";
         var layer = inputs;
