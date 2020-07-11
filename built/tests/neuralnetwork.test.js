@@ -26,20 +26,20 @@ function testTrainWithXorMultipleLayers() {
     var nn = new neuralnetwork_1.default(2, 5, 5, 4, 3, 2, 1);
     var trainingData = [
         {
-            inputs: matrix_js_1.default.fromArray([0, 0]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [0, 0],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 1]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [1, 1],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([0, 1]),
-            expected: matrix_js_1.default.fromArray([1])
+            inputs: [0, 1],
+            expected: [1]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 0]),
-            expected: matrix_js_1.default.fromArray([1])
+            inputs: [1, 0],
+            expected: [1]
         }
     ];
     for (var i = 0; i < 50000; i++) {
@@ -56,20 +56,20 @@ function testTrainWithAnd() {
     var nn = new neuralnetwork_1.default(2, 1, 1);
     var trainingData = [
         {
-            inputs: matrix_js_1.default.fromArray([0, 0]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [0, 0],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 1]),
-            expected: matrix_js_1.default.fromArray([1])
+            inputs: [1, 1],
+            expected: [1]
         },
         {
-            inputs: matrix_js_1.default.fromArray([0, 1]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [0, 1],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 0]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [1, 0],
+            expected: [0]
         }
     ];
     for (var i = 0; i < 50000; i++) {
@@ -86,20 +86,20 @@ function testTrainWithXor() {
     var nn = new neuralnetwork_1.default(2, 2, 1);
     var trainingData = [
         {
-            inputs: matrix_js_1.default.fromArray([0, 0]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [0, 0],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 1]),
-            expected: matrix_js_1.default.fromArray([0])
+            inputs: [1, 1],
+            expected: [0]
         },
         {
-            inputs: matrix_js_1.default.fromArray([0, 1]),
-            expected: matrix_js_1.default.fromArray([1])
+            inputs: [0, 1],
+            expected: [1]
         },
         {
-            inputs: matrix_js_1.default.fromArray([1, 0]),
-            expected: matrix_js_1.default.fromArray([1])
+            inputs: [1, 0],
+            expected: [1]
         }
     ];
     for (var i = 0; i < 50000; i++) {

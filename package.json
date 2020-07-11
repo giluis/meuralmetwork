@@ -8,7 +8,7 @@
     "built/**/*"
   ],
   "scripts": {
-    "start": "node ./built/app.js",
+    "start": "node ./built/index.js",
     "test": "node ./built/tests/app.test.js",
     "build": "tsc"
   },

@@ -27,20 +27,20 @@ function testTrainWithXorMultipleLayers(){
     let nn = new NeuralNetwork(2,5,5,4,3,2,1);
     let trainingData = [
         {
-            inputs:Matrix.fromArray([0,0]),
-            expected: Matrix.fromArray([0])
+            inputs:[0,0],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([1,1]),
-            expected: Matrix.fromArray([0])
+            inputs:[1,1],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([0,1]),
-            expected: Matrix.fromArray([1])
+            inputs:[0,1],
+            expected: [1]
         },
         {
-            inputs:Matrix.fromArray([1,0]),
-            expected: Matrix.fromArray([1])
+            inputs:[1,0],
+            expected: [1]
         }
     ]
 
@@ -61,20 +61,20 @@ function testTrainWithAnd(){
     let nn = new NeuralNetwork(2, 1, 1);
     let trainingData = [
         {
-            inputs:Matrix.fromArray([0,0]),
-            expected: Matrix.fromArray([0])
+            inputs:[0,0],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([1,1]),
-            expected: Matrix.fromArray([1])
+            inputs:[1,1],
+            expected: [1]
         },
         {
-            inputs:Matrix.fromArray([0,1]),
-            expected: Matrix.fromArray([0])
+            inputs:[0,1],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([1,0]),
-            expected: Matrix.fromArray([0])
+            inputs:[1,0],
+            expected: [0]
         }
     ]
 
@@ -94,20 +94,20 @@ function testTrainWithXor() {
     let nn = new NeuralNetwork(2, 2, 1);
     let trainingData = [
         {
-            inputs:Matrix.fromArray([0,0]),
-            expected: Matrix.fromArray([0])
+            inputs:[0,0],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([1,1]),
-            expected: Matrix.fromArray([0])
+            inputs:[1,1],
+            expected: [0]
         },
         {
-            inputs:Matrix.fromArray([0,1]),
-            expected: Matrix.fromArray([1])
+            inputs:[0,1],
+            expected: [1]
         },
         {
-            inputs:Matrix.fromArray([1,0]),
-            expected: Matrix.fromArray([1])
+            inputs:[1,0],
+            expected: [1]
         }
     ]
 
