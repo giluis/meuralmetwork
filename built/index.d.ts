@@ -1,2 +1,2 @@
 import NeuralNetwork from "./neuralnetwork";
-export default NeuralNetwork;
+export {NeuralNetwork};
