@@ -1,10 +1,8 @@
 import NeuralNetwork from "./neuralnetwork.js";
 
-let obj = {
-    create: function(...layerSizes: number[]){
-        return new NeuralNetwork(...layerSizes);
-    }
+function create(...layerSizes: number[]){
+    return new NeuralNetwork(...layerSizes);
 }
-
-
-export {obj};
+export {
+    create
+};

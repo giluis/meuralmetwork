@@ -1,8 +1,6 @@
 import NeuralNetwork from "./neuralnetwork.js";
-let obj = {
-    create: function (...layerSizes) {
-        return new NeuralNetwork(...layerSizes);
-    }
-};
-export { obj };
+function create(...layerSizes) {
+    return new NeuralNetwork(...layerSizes);
+}
+export { create };
 //# sourceMappingURL=index.js.map
