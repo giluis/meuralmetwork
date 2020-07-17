@@ -105,6 +105,14 @@ export default class NeuralNetwork {
             this.biases[i] = Matrix.random(this.layerSizes[i + 1], 1);
         }
     }
+    toJsonString() {
+        let data = {
+            weights: this.weights.map(w => Matrix.toArray(w)),
+            biases: this.biases.map(b => Matrix.toArray(b)),
+            layerSizes: this.layerSizes.map(s => s)
+        };
+        return JSON.stringify(data);
+    }
     /**
      * Prints the weights and Biases
      */

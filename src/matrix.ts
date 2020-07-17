@@ -193,14 +193,24 @@ export default class Matrix{
      * @param {Matrix} m 
      */
     static toArray(m: Matrix) {
-        if (m.numRows !== 1 && m.numCols !== 1)
-            throw `Cannot convert to array, both numRows and numCols are different than one`;
+        if (!m)
+            throw `arg cannot be null`;
         let result = [];
-        for (let i = 0; i < m.numRows; i++) {
-            for (let j = 0; j < m.numCols; j++) {
-                result.push(m.data[i][j])
+        if(m.numRows === 1 || m.numCols === 1){
+            for (let i = 0; i < m.numRows; i++) {
+                for (let j = 0; j < m.numCols; j++) {
+                    result.push(m.get(i,j))
+                }
+            }
+        } else {
+            for (let i = 0; i < m.numRows; i++) {
+                result[i] = [];
+                for (let j = 0; j < m.numCols; j++) {
+                    result[i][j] = m.get(i,j);
+                }
             }
         }
+        
 
         return result;
     }

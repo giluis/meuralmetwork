@@ -4,8 +4,8 @@ import {runAuxTests} from "./aux.test.js"
 import {runNeuralNetworkTests} from "./neuralnetwork.test.js";
 function runAllTests(){
     runAuxTests();
-    runMatrixTests();
     runPerceptronTests();
+    runMatrixTests();
     runNeuralNetworkTests();
     console.log("\n\n\n%cFINISHED TESTS\n","color:#32e402");
 }

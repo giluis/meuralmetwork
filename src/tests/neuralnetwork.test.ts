@@ -1,8 +1,8 @@
 import NeuralNetwork from '../neuralnetwork.js';
 import { WaBData } from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
-import { sigmoid,pickRandom } from "../aux.js";
-import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals } from "./assertions.js";
+import { sigmoid, pickRandom } from "../aux.js";
+import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals } from "./assertions.js";
 import * as _ from 'underscore';
 
 export function runNeuralNetworkTests() {
@@ -19,74 +19,128 @@ export function runNeuralNetworkTests() {
     testTrainWithXor();
     testTrainWithAnd();
     testTrainWithXorMultipleLayers();
+    testToJsonString();
+}
+
+function testToJsonString() {
+    console.log("\n\tTest toJsonString");
+    let nn = new NeuralNetwork(2, 2, 3);
+
+    let w1 = Matrix.load([
+        [1, 2],
+        [4, 5]
+    ])
+    let w2 = Matrix.load([
+        [1, 2],
+        [2, 3],
+        [1, 2],
+    ])
+
+    let b1 = Matrix.fromArray([1, 2]);
+    let b2 = Matrix.fromArray([3, 3, 3]);
+
+    let data: WaBData = {
+        weights: [
+            w1,
+            w2
+        ],
+        biases: [
+            b1,
+            b2
+        ]
+    }
+    nn.set(data);
+    let result = nn.toJsonString();
+    let expected = JSON.stringify({
+        weights: [
+            [
+
+                [1, 2],
+                [4, 5]
+            ],
+            [
+                [1, 2],
+                [2, 3],
+                [1, 2],
+            ]
+        ],
+        biases: [
+            [1,2],
+            [3,3,3]
+        ],
+        layerSizes: [2,2,3]
+    })
+
+    console.log(expected);
+    assertStringEquals(expected,result);
 
 }
 
-function testTrainWithXorMultipleLayers(){
+function testTrainWithXorMultipleLayers() {
     console.log("\n\tTest train with XOR and multiple layers");
-    let nn = new NeuralNetwork(2,5,5,4,3,2,1);
+    let nn = new NeuralNetwork(2, 5, 5, 4, 3, 2, 1);
     let trainingData = [
         {
-            inputs:[0,0],
+            inputs: [0, 0],
             expected: [0]
         },
         {
-            inputs:[1,1],
+            inputs: [1, 1],
             expected: [0]
         },
         {
-            inputs:[0,1],
+            inputs: [0, 1],
             expected: [1]
         },
         {
-            inputs:[1,0],
+            inputs: [1, 0],
             expected: [1]
         }
     ]
 
-    for(let i = 0; i < 50000;i++){
+    for (let i = 0; i < 50000; i++) {
         let sample = pickRandom(trainingData);
-        nn.train(sample.inputs,sample.expected);
+        nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1,0]).print("1 XOR 0");
-    nn.feedForward([0,0]).print("0 XOR 0");
-    nn.feedForward([0,1]).print("0 XOR 1");
-    nn.feedForward([1,1]).print("1 XOR 1");
+    nn.feedForward([1, 0]).print("1 XOR 0");
+    nn.feedForward([0, 0]).print("0 XOR 0");
+    nn.feedForward([0, 1]).print("0 XOR 1");
+    nn.feedForward([1, 1]).print("1 XOR 1");
 }
 
 
-function testTrainWithAnd(){
+function testTrainWithAnd() {
     console.log("\n\tTest train with and");
     let nn = new NeuralNetwork(2, 1, 1);
     let trainingData = [
         {
-            inputs:[0,0],
+            inputs: [0, 0],
             expected: [0]
         },
         {
-            inputs:[1,1],
+            inputs: [1, 1],
             expected: [1]
         },
         {
-            inputs:[0,1],
+            inputs: [0, 1],
             expected: [0]
         },
         {
-            inputs:[1,0],
+            inputs: [1, 0],
             expected: [0]
         }
     ]
 
-    for(let i = 0; i < 50000;i++){
+    for (let i = 0; i < 50000; i++) {
         let sample = pickRandom(trainingData);
-        nn.train(sample.inputs,sample.expected);
+        nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1,0]).print("1 AND 0");
-    nn.feedForward([0,0]).print("0 AND 0");
-    nn.feedForward([0,1]).print("0 AND 1");
-    nn.feedForward([1,1]).print("1 AND 1");
+    nn.feedForward([1, 0]).print("1 AND 0");
+    nn.feedForward([0, 0]).print("0 AND 0");
+    nn.feedForward([0, 1]).print("0 AND 1");
+    nn.feedForward([1, 1]).print("1 AND 1");
 }
 
 function testTrainWithXor() {
@@ -94,33 +148,33 @@ function testTrainWithXor() {
     let nn = new NeuralNetwork(2, 2, 1);
     let trainingData = [
         {
-            inputs:[0,0],
+            inputs: [0, 0],
             expected: [0]
         },
         {
-            inputs:[1,1],
+            inputs: [1, 1],
             expected: [0]
         },
         {
-            inputs:[0,1],
+            inputs: [0, 1],
             expected: [1]
         },
         {
-            inputs:[1,0],
+            inputs: [1, 0],
             expected: [1]
         }
     ]
 
-    for(let i = 0; i < 50000;i++){
+    for (let i = 0; i < 50000; i++) {
         let sample = pickRandom(trainingData);
-        nn.train(sample.inputs,sample.expected);
+        nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1,0]).print("1 XOR 0");
-    nn.feedForward([0,0]).print("0 XOR 0");
-    nn.feedForward([0,1]).print("0 XOR 1");
-    nn.feedForward([1,1]).print("1 XOR 1");
-        
+    nn.feedForward([1, 0]).print("1 XOR 0");
+    nn.feedForward([0, 0]).print("0 XOR 0");
+    nn.feedForward([0, 1]).print("0 XOR 1");
+    nn.feedForward([1, 1]).print("1 XOR 1");
+
 }
 
 
@@ -152,8 +206,8 @@ function testFeedForwardSetLayers() {
     let inputs = [1, 0];
     let outputs = nn.feedForward(inputs);
 
-    let hidden1 = Matrix.map(Matrix.add(Matrix.mult(data.weights[0],Matrix.fromArray(inputs)),data.biases[0]),sigmoid);
-    let hidden2 = Matrix.map(Matrix.add(Matrix.mult(data.weights[1],hidden1),data.biases[1]),sigmoid);
+    let hidden1 = Matrix.map(Matrix.add(Matrix.mult(data.weights[0], Matrix.fromArray(inputs)), data.biases[0]), sigmoid);
+    let hidden2 = Matrix.map(Matrix.add(Matrix.mult(data.weights[1], hidden1), data.biases[1]), sigmoid);
 
     assertMatrixEquals(Matrix.fromArray(inputs), nn.layers[0])
     assertMatrixEquals(hidden1, nn.layers[1]);
@@ -172,8 +226,8 @@ function testRandomize() {
     let nn = new NeuralNetwork(2, 3, 4);
     assertNumEquals(nn.weights[0].numRows, nn.layerSizes[1]);
     assertNumEquals(nn.weights[1].numRows, nn.layerSizes[2]);
-    assertNumEquals(nn.biases[0].numRows,nn.layerSizes[1]);
-    assertNumEquals(nn.biases[1].numRows,nn.layerSizes[2]);
+    assertNumEquals(nn.biases[0].numRows, nn.layerSizes[1]);
+    assertNumEquals(nn.biases[1].numRows, nn.layerSizes[2]);
 }
 
 function testSetLayer() {

@@ -8,7 +8,8 @@ export function runMatrixTests() {
     testClone();
     testFromArray();
     testTranspose();
-    testToArray();
+    testToArrayOneDimensional();
+    testToArrayTwoDimensional();
     testMult();
     testRandom();
     testMap();
@@ -216,8 +217,18 @@ function testRandom() {
     let newMatrix = Matrix.random(2, 3);
     newMatrix.print("Should be random");
 }
-function testToArray() {
-    console.log("\n\tTest toArray");
+function testToArrayTwoDimensional() {
+    console.log("\n\tTest toArray Two dimensional");
+    //Test wether or not the data is maintained
+    let expected = Matrix.load([
+        [1, 2, 3],
+        [4, 5, 6],
+    ]);
+    let result = Matrix.load(Matrix.toArray(expected));
+    assertMatrixEquals(expected, result);
+}
+function testToArrayOneDimensional() {
+    console.log("\n\tTest toArray one dimensional");
     let m = new Matrix(4, 1);
     m.setData([
         [1],

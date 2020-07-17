@@ -1,7 +1,7 @@
 import NeuralNetwork from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
 import { sigmoid, pickRandom } from "../aux.js";
-import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals } from "./assertions.js";
+import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals } from "./assertions.js";
 export function runNeuralNetworkTests() {
     console.log("\n%cNEURAL NETWORK TESTS\n", "color:#f3c131");
     testConstrutor();
@@ -16,6 +16,54 @@ export function runNeuralNetworkTests() {
     testTrainWithXor();
     testTrainWithAnd();
     testTrainWithXorMultipleLayers();
+    testToJsonString();
+}
+function testToJsonString() {
+    console.log("\n\tTest toJsonString");
+    let nn = new NeuralNetwork(2, 2, 3);
+    let w1 = Matrix.load([
+        [1, 2],
+        [4, 5]
+    ]);
+    let w2 = Matrix.load([
+        [1, 2],
+        [2, 3],
+        [1, 2],
+    ]);
+    let b1 = Matrix.fromArray([1, 2]);
+    let b2 = Matrix.fromArray([3, 3, 3]);
+    let data = {
+        weights: [
+            w1,
+            w2
+        ],
+        biases: [
+            b1,
+            b2
+        ]
+    };
+    nn.set(data);
+    let result = nn.toJsonString();
+    let expected = JSON.stringify({
+        weights: [
+            [
+                [1, 2],
+                [4, 5]
+            ],
+            [
+                [1, 2],
+                [2, 3],
+                [1, 2],
+            ]
+        ],
+        biases: [
+            [1, 2],
+            [3, 3, 3]
+        ],
+        layerSizes: [2, 2, 3]
+    });
+    console.log(expected);
+    assertStringEquals(expected, result);
 }
 function testTrainWithXorMultipleLayers() {
     console.log("\n\tTest train with XOR and multiple layers");

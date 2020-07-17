@@ -37,6 +37,7 @@ export default class NeuralNetwork {
      * Sets weights at random
      */
     randomize(): void;
+    toJsonString(): string;
     /**
      * Prints the weights and Biases
      */

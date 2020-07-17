@@ -27,6 +27,12 @@ export function assertNumEquals(expected:number,result:number):void{
 }
 
 
+export function assertStringEquals(expected:string,result:string):void{
+    if(expected !== result){
+        throw `assertStringEquals failed - Strings were not the same -> ${expected} !== ${result}`;
+    }
+}
+
 export function assertArrayEquals(expected:any[],result:any[]):void{
     if(expected.length !== result.length)
         throw `assertArrayEquals failed: arrays were different lengths \n expected.length -> ${expected.length} | result.length-> ${result.length}`;

@@ -147,6 +147,16 @@ export default class NeuralNetwork {
         }
     }
 
+    toJsonString(): string{
+        let data = {
+            weights: this.weights.map(w => Matrix.toArray(w)),
+            biases: this.biases.map(b=>Matrix.toArray(b)),
+            layerSizes: this.layerSizes.map(s=>s)
+        }
+        return JSON.stringify(data);
+    }
+
+    
 
     /**
      * Prints the weights and Biases

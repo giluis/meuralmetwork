@@ -4,6 +4,7 @@ export declare function assertFalse(bool: boolean, msg: string): void;
 export declare function assertTrue(bool: boolean, msg: string): void;
 export declare function assertMatrixEquals(expected: Matrix, result: Matrix): void;
 export declare function assertNumEquals(expected: number, result: number): void;
+export declare function assertStringEquals(expected: string, result: string): void;
 export declare function assertArrayEquals(expected: any[], result: any[]): void;
 export declare function assertNumNotEquals(expected: number, result: number): void;
 export declare function assertGreaterThan(num: number, min: number): void;

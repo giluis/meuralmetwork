@@ -19,6 +19,11 @@ export function assertNumEquals(expected, result) {
     if (expected !== result)
         throw `assertNumEquals failed - Numbers were not the same: ${expected} !== ${result}`;
 }
+export function assertStringEquals(expected, result) {
+    if (expected !== result) {
+        throw `assertStringEquals failed - Strings were not the same -> ${expected} !== ${result}`;
+    }
+}
 export function assertArrayEquals(expected, result) {
     if (expected.length !== result.length)
         throw `assertArrayEquals failed: arrays were different lengths \n expected.length -> ${expected.length} | result.length-> ${result.length}`;
