@@ -2,8 +2,9 @@
   "name": "meuralmetwork",
   "version": "2.6.0",
   "description": "modelling a neural network ",
-  "main": "built/neuralnetwork.js",
+  "main": "built/index.js",
   "types": "built/index.d.ts",
+  "type": "module",
   "files": [
     "built/**/*"
   ],

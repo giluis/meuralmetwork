@@ -6,4 +6,7 @@ let obj = {
     }
 }
 
+
+let nn = obj.create(2,3,4);
+console.log(nn);
 export default obj;
