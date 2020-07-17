@@ -1,4 +1,4 @@
-import NeuralNetwork from "./neuralnetwork";
+import NeuralNetwork from "./neuralnetwork.js";
 
 let obj = {
     create: function(...layerSizes: number[]){
@@ -7,6 +7,4 @@ let obj = {
 }
 
 
-let nn = obj.create(2,3,4);
-console.log(nn);
 export {obj};
