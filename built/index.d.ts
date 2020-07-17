@@ -1,2 +1,5 @@
 import NeuralNetwork from "./neuralnetwork";
-export {NeuralNetwork};
+declare let obj: {
+    create: (...layerSizes: number[]) => NeuralNetwork;
+};
+export default obj;
