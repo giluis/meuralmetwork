@@ -1,5 +1,5 @@
-import NeuralNetwork from '../neuralnetwork';
-import { WaBData } from '../neuralnetwork';
+import NeuralNetwork from '../neuralnetwork.js';
+import { WaBData } from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
 import { sigmoid,pickRandom } from "../aux.js";
 import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals } from "./assertions.js";
