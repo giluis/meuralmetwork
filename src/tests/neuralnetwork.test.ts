@@ -1,7 +1,7 @@
 import NeuralNetwork from '../neuralnetwork.js';
 import { WaBData } from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
-import { sigmoid, pickRandom } from "../aux.js";
+import { sigmoid, pickRandom } from "../utilitary.js";
 import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals } from "./assertions.js";
 import * as _ from 'underscore';
 

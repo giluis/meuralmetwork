@@ -1,5 +1,5 @@
 import Matrix from "./matrix.js";
-import { sigmoid } from "./aux.js";
+import { sigmoid } from "./utilitary.js";
 
 export default class NeuralNetwork {
     static PRINT_HEADER: string = "\n\n\n==== neural net  ===="

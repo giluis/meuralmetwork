@@ -1,20 +1,10 @@
-import {SIGMOID_FLATTENER} from "./constants.js";
+export const SIGMOID_FLATTENER = 1;
 
 export function pickRandom(arr:any[]){
 	return arr[Math.floor(Math.random()*arr.length)];
 }
 export function sigmoid(x:number):number{
     return 1/(1+Math.exp(SIGMOID_FLATTENER*(-x)))
-}
-
-export function pointLabellingActivation(x:number):number{
-    return x>0?1:-1;
-}
-
-export function plot(fn:(x:number)=>number): void{
-	for(let i = 0; i<100; i++){
-		console.log(`f(${i})=${fn(i)}`)
-	}
 }
 
 export function truncate(number: number,numDecPlaces:number):number{
@@ -29,6 +19,6 @@ export function truncate(number: number,numDecPlaces:number):number{
 	return Number(numstring);
 }
 
-function isNumInteger(num:number):boolean{
+export function isNumInteger(num:number):boolean{
 	return Math.floor(num) === num;
 }

@@ -1,15 +1,13 @@
 import {assertMatrixEquals, assertNumEquals} from './assertions.js';
-import {sigmoid,truncate,pointLabellingActivation} from "../aux.js";
-import { SIGMOID_FLATTENER } from '../constants.js';
+import {sigmoid,SIGMOID_FLATTENER,truncate} from "../utilitary.js";
 
 
 
 
-export function runAuxTests(){
+export function runUtilitaryTests(){
     console.log("\n%cAUX TESTS\n","color:#f3c131");
     
     testSigmoid();
-    testPointLabellingActivation();
     testTruncate();
 }
 
@@ -26,6 +24,12 @@ function testTruncate(){
     expected = 3.1415
     result = truncate(num,numDecimalPlaces);
     assertNumEquals(expected,result);
+
+    numDecimalPlaces = 4;
+    num = -1.43234;
+    expected = -1.4323;
+    result = truncate(num,numDecimalPlaces);
+    assertNumEquals(expected,result);
 }
 
 function testSigmoid(){
@@ -37,24 +41,6 @@ function testSigmoid(){
     num = -3;
     expected = 1/(1+Math.exp(SIGMOID_FLATTENER*(-num)));
     result = sigmoid(num)
-    assertNumEquals(expected,result);
-}
-
-function testPointLabellingActivation(){
-    console.log("\n\tTest pointLabellingActivation");
-    
-    // let expected = -1;
-    // let num = -123;
-    // let result = p.activation(num);
-    // assertNumEquals(expected,result);
-    
-    // expected = 1;
-    // num = 123,
-    // result = p.activation(num);
-    // assertNumEquals(expected,result);
-    let num = -3;
-    let expected = -1;
-    let result = pointLabellingActivation(num);
     assertNumEquals(expected,result);
 }
 
