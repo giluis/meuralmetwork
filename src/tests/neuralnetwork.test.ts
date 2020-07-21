@@ -103,10 +103,10 @@ function testTrainWithXorMultipleLayers() {
         nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1, 0]).print("1 XOR 0");
-    nn.feedForward([0, 0]).print("0 XOR 0");
-    nn.feedForward([0, 1]).print("0 XOR 1");
-    nn.feedForward([1, 1]).print("1 XOR 1");
+    Matrix.fromArray(nn.feedForward([1, 0])).print("1 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 0])).print("0 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 1])).print("0 XOR 1");
+    Matrix.fromArray(nn.feedForward([1, 1])).print("1 XOR 1");
 }
 
 
@@ -137,10 +137,10 @@ function testTrainWithAnd() {
         nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1, 0]).print("1 AND 0");
-    nn.feedForward([0, 0]).print("0 AND 0");
-    nn.feedForward([0, 1]).print("0 AND 1");
-    nn.feedForward([1, 1]).print("1 AND 1");
+    Matrix.fromArray(nn.feedForward([1, 0])).print("1 AND 0");
+    Matrix.fromArray(nn.feedForward([0, 0])).print("0 AND 0");
+    Matrix.fromArray(nn.feedForward([0, 1])).print("0 AND 1");
+    Matrix.fromArray(nn.feedForward([1, 1])).print("1 AND 1");
 }
 
 function testTrainWithXor() {
@@ -170,10 +170,10 @@ function testTrainWithXor() {
         nn.train(sample.inputs, sample.expected);
     }
 
-    nn.feedForward([1, 0]).print("1 XOR 0");
-    nn.feedForward([0, 0]).print("0 XOR 0");
-    nn.feedForward([0, 1]).print("0 XOR 1");
-    nn.feedForward([1, 1]).print("1 XOR 1");
+    Matrix.fromArray(nn.feedForward([1, 0])).print("1 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 0])).print("0 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 1])).print("0 XOR 1");
+    Matrix.fromArray(nn.feedForward([1, 1])).print("1 XOR 1");
 
 }
 
@@ -204,10 +204,10 @@ function testFeedForwardSetLayers() {
     let nn = new NeuralNetwork(2, 2, 2, 1);
     nn.set(data);
     let inputs = [1, 0];
-    let outputs = nn.feedForward(inputs);
-
+    
     let hidden1 = Matrix.map(Matrix.add(Matrix.mult(data.weights[0], Matrix.fromArray(inputs)), data.biases[0]), sigmoid);
     let hidden2 = Matrix.map(Matrix.add(Matrix.mult(data.weights[1], hidden1), data.biases[1]), sigmoid);
+    let outputs = Matrix.fromArray(nn.feedForward(inputs));
 
     assertMatrixEquals(Matrix.fromArray(inputs), nn.layers[0])
     assertMatrixEquals(hidden1, nn.layers[1]);
@@ -312,7 +312,7 @@ function testFeedForward4Layers() {
     o.print("Ourput")
 
     nn.feedForward(inputs)
-    assertMatrixEquals(o, nn.feedForward(inputs))
+    assertMatrixEquals(o, Matrix.fromArray(nn.feedForward(inputs)))
 
 }
 function testValidateBiases() {
@@ -395,7 +395,7 @@ function testFeedForward3Layers() {
     let result = nn.feedForward(inputs);
     console.log("Rwefwecs");
 
-    assertMatrixEquals(expected, result)
+    assertMatrixEquals(expected, Matrix.fromArray(result))
 }
 
 function testSetWeights() {

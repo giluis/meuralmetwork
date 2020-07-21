@@ -43,7 +43,7 @@ export default class NeuralNetwork {
     // }
 
     train(inputsArr: number[], expectedArr: number[]): void {
-        let outputs = this.feedForward(inputsArr);
+        let outputs = Matrix.fromArray(this.feedForward(inputsArr));
         let expected = Matrix.fromArray(expectedArr);
         let error = Matrix.sub(expected, outputs);
         let gradients: Matrix;
@@ -101,7 +101,7 @@ export default class NeuralNetwork {
      * Implements feed forward algorythm
      * @param inputs inputs to feed to the nn
      */
-    feedForward(inputsArr: number[]): Matrix {
+    feedForward(inputsArr: number[]): number[] {
         let inputs = Matrix.fromArray(inputsArr);
         if (!this.areInputsValid(inputs))
             throw "shit inputs"
@@ -116,7 +116,7 @@ export default class NeuralNetwork {
             layer = Matrix.map(layer, this.activation);
         }
         this.setLayer(i, layer);
-        return layer;
+        return Matrix.toArray(layer);
 
     }
 
