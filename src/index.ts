@@ -5,12 +5,10 @@ function create(...layerSizes: number[]): NeuralNetwork{
 }
 
 function fromJsonString(str:string):NeuralNetwork{
-    let json = JSON.parse(str);
-    let nn = new NeuralNetwork(...json.layerSizes);
-    nn.setWeights(json.weights.map(w => Matrix.load(w)));
-    nn.setBiases(json.biases.map(b => Matrix.fromArray(b)));
-    return nn;
+    return NeuralNetwork.fromJsonString(str);
 }
+
+
 export {
     fromJsonString,
     create

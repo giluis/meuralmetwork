@@ -20,6 +20,58 @@ export function runNeuralNetworkTests() {
     testTrainWithAnd();
     testTrainWithXorMultipleLayers();
     testToJsonString();
+    testFromJsonString();
+}
+
+function testFromJsonString(){
+    console.log("\n\tTest fromJsonString");
+    let nn = new NeuralNetwork(2,2,1);
+    let weights = [
+        Matrix.load([
+            [1,1],
+            [1,1]
+        ]),
+        Matrix.load([[1,2]])
+    ];
+    let biases = [
+        
+            Matrix.fromArray([1,1]),
+            Matrix.fromArray([2]),
+        
+    ]
+    nn.setWeights(weights);
+    nn.setBiases(biases);
+    console.log("Here")
+    let jsonString = nn.toJsonString();
+
+    //create a Neuralnetwork from the string. NeuralNetworks should be the same
+    let fromJsonNN = NeuralNetwork.fromJsonString(jsonString);
+    console.log("Here2")
+    let expected = weights[0];
+    let result = fromJsonNN.weights[0];
+
+    assertMatrixEquals(expected,result);
+
+    
+    expected = weights[1];
+    result = fromJsonNN.weights[1];
+
+    assertMatrixEquals(expected,result);
+
+    
+    expected = biases[0];
+    result = fromJsonNN.biases[0];
+
+    assertMatrixEquals(expected,result);
+
+    
+    expected = biases[1];
+    result = fromJsonNN.biases[1];
+
+    assertMatrixEquals(expected,result);
+
+
+
 }
 
 function testToJsonString() {

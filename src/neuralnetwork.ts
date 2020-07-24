@@ -1,5 +1,5 @@
 import Matrix from "./matrix.js";
-import { sigmoid } from "./utilitary.js";
+import { sigmoid,maxIndex } from "./utilitary.js";
 
 export default class NeuralNetwork {
     static PRINT_HEADER: string = "\n\n\n==== neural net  ===="
@@ -73,10 +73,26 @@ export default class NeuralNetwork {
 
 
     /**
+     * Calculates accuracy of neural network (num correct/total)
+     * @param examples 
+     */
+    calcAccuracy(examples: TestExample[]):number{
+        let numCorrect = examples.reduce((acc:number,cur:TestExample,i:number)=>{
+            let guess = this.feedForward(cur.input);
+            if(maxIndex(guess) === maxIndex(cur.output)){
+                return acc+1;
+            }
+            return acc;
+        },0)
+
+        return numCorrect/examples.length;
+    } 
+
+    /**
      * 
      * @param guess Matriz que representa o guess da NN
      * @param expected  Matriz que representa o resultado esperado
-     * @param layerIndex Indíce da camada da qual <em>partem</em> as ligações que estão a ser alteradas
+     * @param layerIndex Índice da camada da qual <em>partem</em> as ligações que estão a ser alteradas
      */
 
     calcWeightDeltas(guess: Matrix, expected: Matrix, layer: Matrix, learningRate: number): Matrix {
@@ -147,16 +163,16 @@ export default class NeuralNetwork {
         }
     }
 
-    toJsonString(): string{
+    toJsonString(): string {
         let data = {
             weights: this.weights.map(w => Matrix.toArray(w)),
-            biases: this.biases.map(b=>Matrix.toArray(b)),
-            layerSizes: this.layerSizes.map(s=>s)
+            biases: this.biases.map(b => Matrix.toArray(b)),
+            layerSizes: this.layerSizes.map(s => s)
         }
         return JSON.stringify(data);
     }
 
-    
+
 
     /**
      * Prints the weights and Biases
@@ -192,6 +208,16 @@ export default class NeuralNetwork {
             }
         })
         this.weights = weightArr.map(weights => weights);
+    }
+
+    static fromJsonString(str:string):NeuralNetwork{
+        let json = JSON.parse(str);
+        console.log(json);
+        let nn = new NeuralNetwork(...json.layerSizes);
+
+        nn.setWeights(json.weights.map(w => Matrix.load(w)));
+        nn.setBiases(json.biases.map(b => Matrix.fromArray(b)));
+        return nn;
     }
 
     /**
@@ -252,4 +278,9 @@ export default class NeuralNetwork {
 export interface WaBData {
     weights: Matrix[],
     biases: Matrix[],
+}
+
+export interface TestExample{
+    input: number[],
+    output: number[]
 }

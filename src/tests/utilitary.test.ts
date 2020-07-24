@@ -1,5 +1,5 @@
 import {assertMatrixEquals, assertNumEquals} from './assertions.js';
-import {sigmoid,SIGMOID_FLATTENER,truncate} from "../utilitary.js";
+import {sigmoid,SIGMOID_FLATTENER,maxIndex} from "../utilitary.js";
 
 
 
@@ -8,27 +8,13 @@ export function runUtilitaryTests(){
     console.log("\n%cAUX TESTS\n","color:#f3c131");
     
     testSigmoid();
-    testTruncate();
+    testMaxIndex();
 }
-
-function testTruncate(){
-    console.log("\n\tTest truncate");
-    let numDecimalPlaces = 2;
-    let num = 0.215748372
-    let expected = 0.21;
-    let result = truncate(num,numDecimalPlaces)
-    assertNumEquals(expected,result);
-
-    numDecimalPlaces = 4;
-    num = 3.141592;
-    expected = 3.1415
-    result = truncate(num,numDecimalPlaces);
-    assertNumEquals(expected,result);
-
-    numDecimalPlaces = 4;
-    num = -1.43234;
-    expected = -1.4323;
-    result = truncate(num,numDecimalPlaces);
+function testMaxIndex(){
+    console.log("\n\tTest maxIndex");
+    let arr = [0.11,0.78,0.1];
+    let expected = 1;
+    let result = maxIndex(arr);
     assertNumEquals(expected,result);
 }
 
