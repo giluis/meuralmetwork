@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "start": "node ./built/index.js",
-    "test": "node ./built/tests/app.test.js",
-    "build": "tsc"
+    "test": "node ./built/tests/index.test.js",
+    "build": "tsc --watch"
   },
   "author": "macholatino45",
   "license": "ISC",
