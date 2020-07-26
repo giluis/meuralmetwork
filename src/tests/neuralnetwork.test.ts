@@ -150,7 +150,7 @@ function testTrainWithXorMultipleLayers() {
         }
     ]
 
-    for (let i = 0; i < 50000; i++) {
+    for (let i = 0; i < 500; i++) {
         let sample = pickRandom(trainingData);
         nn.train(sample.inputs, sample.expected);
     }
