@@ -9,15 +9,15 @@ export function runMatrixTests() {
     testEquals();
     testClone();
     testFromArray();
-    testTranspose();
-    testToArrayOneDimensional();
-    testToArrayTwoDimensional();
     testMult();
     testRandom();
     testMap();
     testLoad();
     testMultElementWise();
     testMultScalar();
+    testTranspose();
+    testToArrayOneDimensional();
+    testToArrayTwoDimensional();
 }
 
 function testMultScalar() {
@@ -283,34 +283,24 @@ function testToArrayTwoDimensional(){
 function testToArrayOneDimensional() {
     console.log("\n\tTest toArray one dimensional");
 
-    let m = new Matrix(4, 1);
-    m.setData([
-        [1],
-        [2],
-        [3],
-        [4],
-    ]);
 
-    let expected = [1, 2, 3, 4];
+
+    let m = Matrix.load([
+        [1,2,3,4]
+    ])
+
+    let expected = [[1, 2, 3, 4]];
 
     let result = Matrix.toArray(m);
 
     assertArrayEquals(expected, result);
-
-    m = new Matrix(1, 4);
-    m.setData([
-        [1, 2, 3, 4]
-    ])
-    result = Matrix.toArray(m);
-    assertArrayEquals(expected, result);
-
 
     m = new Matrix(1, 1);
     m.setData([
         [2]
     ]);
 
-    expected = [2];
+    expected = [[2]];
     result = Matrix.toArray(m);
     assertArrayEquals(expected, result);
 

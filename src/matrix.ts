@@ -196,7 +196,7 @@ export default class Matrix{
         if (!m)
             throw `arg cannot be null`;
         let result = [];
-        if(m.numRows === 1 || m.numCols === 1){
+        if(m.numCols === 1 && m.numRows !== 1){//only convert vertical vectors to arrays. Horizontal ones are converted to [[]]
             for (let i = 0; i < m.numRows; i++) {
                 for (let j = 0; j < m.numCols; j++) {
                     result.push(m.get(i,j))
