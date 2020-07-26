@@ -4,6 +4,7 @@ import Matrix from "../matrix.js";
 import { sigmoid, pickRandom } from "../utilitary.js";
 import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals } from "./assertions.js";
 import * as _ from 'underscore';
+import { some } from 'underscore';
 
 export function runNeuralNetworkTests() {
     console.log("\n%cNEURAL NETWORK TESTS\n", "color:#f3c131");
@@ -21,6 +22,46 @@ export function runNeuralNetworkTests() {
     testTrainWithXorMultipleLayers();
     testToJsonString();
     testFromJsonString();
+    testEquals();
+}
+
+function testEquals(){
+    console.log("\n\tTest equals");
+    //in all test cases, equals is tested both ways, to ensure it works both ways
+    const nn1 = new NeuralNetwork(2,2,1);
+
+    const nn2 = new NeuralNetwork(2,2,1);
+
+    nn2.setWeights(nn1.weights);
+    nn2.setBiases(nn1.biases);
+
+    assertTrue(nn1.equals(nn2),"neural networks with same numLayers, weights and biases should be equal");
+    assertTrue(nn2.equals(nn1),"neural networks with same numLayers, weights and biases should be equal");
+
+    //since weights are random, nn3 and nn1 will not be equal
+    const nn3 = new NeuralNetwork(2,2,1);
+
+
+    assertFalse(nn1.equals(nn3),"neural networks with same numLayers, but diferent weights and biases should be differnt");
+    assertFalse(nn3.equals(nn1),"neural networks with same numLayers, but diferent weights and biases should be differnt");
+
+    
+    //since layer size is different, nn4 and nn1 will not be equal
+    const nn4 = new NeuralNetwork(2,2,3);
+
+    assertFalse(nn1.equals(nn4),"neural networks with different layerSizes should not be equal")
+    assertFalse(nn4.equals(nn1),"neural networks with different layerSizes should not be equal")
+
+
+    //since numLayers is different, nn5 and nn1 will not be equal
+    const nn5 = new NeuralNetwork(2,2,1,4);
+    assertFalse(nn1.equals(nn5),"neural networks with different numLayers should not be equal")
+    assertFalse(nn5.equals(nn1),"neural networks with different numLayers should not be equal")
+    
+
+    const somethingElse = "34534";
+
+    assertFalse(nn1.equals(somethingElse),"A neuralnetwork should only possibly be equal to other instances of NeuralNetwork")
 }
 
 function testFromJsonString(){

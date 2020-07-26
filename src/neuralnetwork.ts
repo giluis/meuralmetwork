@@ -221,6 +221,25 @@ export default class NeuralNetwork {
     }
 
     /**
+     * @returns true if other is NeuralNetowkr with same numLayers, weights and biases, false otherwise
+     */
+    equals(other: any):boolean{
+        if(!(other instanceof NeuralNetwork))
+            return false;
+
+        let othernn = <NeuralNetwork> other;
+        if(this.numLayers !== othernn.numLayers)
+            return false;
+
+        for(let i = 0; i < this.numLayers-1;i++){//numWeights == numLayers -1;
+            //if any of weight or biases matrices is different, return false
+            if(!(this.weights[i].equals(othernn.weights[i]) && this.biases[i].equals(othernn.biases[i])))
+                return false;
+        }
+        return true;
+
+    }
+    /**
      * set biases
      * @param biasArr array of biases to set
      */
