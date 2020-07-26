@@ -38,7 +38,10 @@ export function assertArrayEquals(expected:any[],result:any[]):void{
         throw `assertArrayEquals failed: arrays were different lengths \n expected.length -> ${expected.length} | result.length-> ${result.length}`;
     for(let i = 0; i < expected.length;i++){
         if(expected[i] !== result[i]){
-            throw `Arrays differed: expected[${i}]->${expected[i]} | result[${i}] -> ${result[i]}`
+            if(expected[i] instanceof Array && result[i] instanceof Array)
+                assertArrayEquals(expected[i],result[i]);
+            else 
+                throw `Arrays differed: expected[${i}]->${expected[i]} | result[${i}] -> ${result[i]}`   
         }
     }
 }
