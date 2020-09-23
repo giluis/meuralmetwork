@@ -59,6 +59,14 @@ export default class Matrix{
         return this.numCols === 0 || this.numRows === 0
     }
 
+    add(other:Matrix):Matrix{
+        //validate matrix size
+        if(other.numCols !== this.numCols || other.numRows !== this.numRows)
+            throw 'Invalid matrix size';
+        this.map((v,i,j)=>v+other.get(i,j));
+        return this; //for chaining operations
+    }
+
 
     /**
      * true if matrices are equals (same numRows, numCols and elements)

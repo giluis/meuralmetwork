@@ -18,7 +18,52 @@ export function runMatrixTests() {
     testTranspose();
     testToArrayOneDimensional();
     testToArrayTwoDimensional();
+    testInstanceAdd();
 }
+
+
+function testInstanceAdd(){
+    console.log("\n\t Test instance add");
+
+    let squareNormal = Matrix.load([
+        [1,1,1],
+        [2,2,2],
+        [3,3,3],
+    ])
+
+    let rectNormal = Matrix.load([
+        [0,0],
+        [1,1],
+        [1,2]
+    ])
+
+    let square0 = Matrix.load([
+        [0,0,0],
+        [0,0,0],
+        [0,0,0]
+    ])
+
+    let rect0 = Matrix.load([
+        [0,0],
+        [0,0],
+        [0,0]
+    ])
+    assertMatrixEquals(squareNormal.add(square0),squareNormal);
+    assertMatrixEquals(rectNormal.add(rect0),rectNormal);
+
+    try{
+        squareNormal.add(rectNormal);
+        fail("Adding matrices of different sizes should result in an error");
+    }catch(ignored){}
+
+    assertMatrixEquals(rectNormal.add(rectNormal),Matrix.load([
+        [0,0],
+        [2,2],
+        [2,4]
+    ]))
+    
+}
+
 
 function testMultScalar() {
     console.log("\n\tTest multSclaar");

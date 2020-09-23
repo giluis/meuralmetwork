@@ -1,5 +1,5 @@
 import Matrix from "./matrix.js";
-import { sigmoid,maxIndex } from "./utilitary.js";
+import { sigmoid, maxIndex } from "./utilitary.js";
 
 export default class NeuralNetwork {
     static PRINT_HEADER: string = "\n\n\n==== neural net  ===="
@@ -43,15 +43,28 @@ export default class NeuralNetwork {
     // }
 
     train(inputsArr: number[], expectedArr: number[]): void {
-        let outputs = Matrix.fromArray(this.feedForward(inputsArr));
-        let expected = Matrix.fromArray(expectedArr);
-        let error = Matrix.sub(expected, outputs);
+        let deltas = this.calculateDeltas(inputsArr,expectedArr);
+        deltas.weights.forEach((wm,i)=>{
+            this.weights[i].add(wm);
+        })
+        deltas.biases.forEach((bm,i)=>{
+            this.biases[i].add(bm);
+        })
+        
+    }
+
+    calculateDeltas(inputsArr: number[],expectedArr:number[]):WaBData{
         let gradients: Matrix;
         let layerWeightDeltas: Matrix;
         let layerBiasDeltas: Matrix;
         let currentLayerTransposed: Matrix;
+        let outputs = Matrix.fromArray(this.feedForward(inputsArr));
+        let expected = Matrix.fromArray(expectedArr);
+        let error = Matrix.sub(expected, outputs);
+        let weightDeltas = [];
+        let biasesDeltas = [];
         for (let layerIndex = this.numLayers - 2; layerIndex >= 0; layerIndex--) {//from the penultimate to the second layer (all layers excluding inputs and outputs)
-            gradients = Matrix.map(this.layers[layerIndex + 1], v => v * (1 - v));//nextLayer*(1-nextLayer)
+            gradients = Matrix.map(this.layers[layerIndex + 1], v => v * (1- v));//nextLayer*(1-nextLayer)
             gradients = Matrix.hadamard(gradients, error);
             gradients = Matrix.multScalar(gradients, this.learningRate);
             //transpose current layer for calculation
@@ -59,16 +72,31 @@ export default class NeuralNetwork {
             //calculate weight and bias deltas
             layerWeightDeltas = Matrix.mult(gradients, currentLayerTransposed);
             layerBiasDeltas = gradients;
+            
+            // layerWeightDeltas.print(`layer ${layerIndex} weight deltas`);
+            // layerBiasDeltas.print(`layer ${layerIndex} bias deltas`);
 
-            //adjust the weights
-            this.weights[layerIndex] = Matrix.add(this.weights[layerIndex], layerWeightDeltas);
-            //adjust the biases (difference is just the bias)
-            this.biases[layerIndex] = Matrix.add(this.biases[layerIndex], layerBiasDeltas);
+            // if(layerIndex === 1)
+            //     layerWeightDeltas.print("Inside train weight deltas " + layerIndex);
 
             //calculate error for next iteration
             error = Matrix.mult(Matrix.transpose(this.weights[layerIndex]), error);
 
+            //adjust the weights
+            weightDeltas[layerIndex] = layerWeightDeltas;
+            //adjust the biases (difference is just the bias)
+            biasesDeltas[layerIndex] = layerBiasDeltas;
+
         }
+
+        return {
+            weights: weightDeltas,
+            biases:biasesDeltas
+        }
+    }
+
+    trainInBatch(trainingInstances: TestExample[], batchSize: number): void {
+        
     }
 
 
@@ -76,17 +104,17 @@ export default class NeuralNetwork {
      * Calculates accuracy of neural network (num correct/total)
      * @param examples 
      */
-    calcAccuracy(examples: TestExample[]):number{
-        let numCorrect = examples.reduce((acc:number,cur:TestExample,i:number)=>{
+    calcAccuracy(examples: TestExample[]): number {
+        let numCorrect = examples.reduce((acc: number, cur: TestExample, i: number) => {
             let guess = this.feedForward(cur.input);
-            if(maxIndex(guess) === maxIndex(cur.output)){
-                return acc+1;
+            if (maxIndex(guess) === maxIndex(cur.output)) {
+                return acc + 1;
             }
             return acc;
-        },0)
+        }, 0)
 
-        return numCorrect/examples.length;
-    } 
+        return numCorrect / examples.length;
+    }
 
     /**
      * 
@@ -210,7 +238,7 @@ export default class NeuralNetwork {
         this.weights = weightArr.map(weights => weights);
     }
 
-    static fromJsonString(str:string):NeuralNetwork{
+    static fromJsonString(str: string): NeuralNetwork {
         let json = JSON.parse(str);
         console.log(json);
         let nn = new NeuralNetwork(...json.layerSizes);
@@ -223,17 +251,17 @@ export default class NeuralNetwork {
     /**
      * @returns true if other is NeuralNetowkr with same numLayers, weights and biases, false otherwise
      */
-    equals(other: any):boolean{
-        if(!(other instanceof NeuralNetwork))
+    equals(other: any): boolean {
+        if (!(other instanceof NeuralNetwork))
             return false;
 
-        let othernn = <NeuralNetwork> other;
-        if(this.numLayers !== othernn.numLayers)
+        let othernn = <NeuralNetwork>other;
+        if (this.numLayers !== othernn.numLayers)
             return false;
 
-        for(let i = 0; i < this.numLayers-1;i++){//numWeights == numLayers -1;
+        for (let i = 0; i < this.numLayers - 1; i++) {//numWeights == numLayers -1;
             //if any of weight or biases matrices is different, return false
-            if(!(this.weights[i].equals(othernn.weights[i]) && this.biases[i].equals(othernn.biases[i])))
+            if (!(this.weights[i].equals(othernn.weights[i]) && this.biases[i].equals(othernn.biases[i])))
                 return false;
         }
         return true;
@@ -299,7 +327,7 @@ export interface WaBData {
     biases: Matrix[],
 }
 
-export interface TestExample{
+export interface TestExample {
     input: number[],
     output: number[]
 }

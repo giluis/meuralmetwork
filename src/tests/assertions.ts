@@ -1,8 +1,14 @@
 const ASSERT_FALSE_DEFAULT_MESSAGE = "sHOUld Be fALsE";
 const ASSERT_TRUE_DEFAULT_MESSAGE = "SHoULd Be TRuE";
 import Matrix from "../matrix";
+import NeuralNetwork from "../neuralnetwork";
 export function fail(message:string):void {
     throw message;
+}
+
+export function assertNeuralNetworkEquals(nn1:NeuralNetwork,nn2:NeuralNetwork){
+    if(!nn1.equals(nn2))
+        throw `Neural networks were not equal`;
 }
 
 export function assertFalse(bool:boolean,msg:string):void {

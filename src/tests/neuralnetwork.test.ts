@@ -2,27 +2,146 @@ import NeuralNetwork from '../neuralnetwork.js';
 import { WaBData } from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
 import { sigmoid, pickRandom } from "../utilitary.js";
-import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals } from "./assertions.js";
-import * as _ from 'underscore';
-import { some } from 'underscore';
+import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals, assertNeuralNetworkEquals } from "./assertions.js";
 
 export function runNeuralNetworkTests() {
     console.log("\n%cNEURAL NETWORK TESTS\n", "color:#f3c131");
-    testConstrutor();
-    testValidateWeights();
-    testValidateBiases();
-    testSetWeights();
-    testFeedForward3Layers();
-    testFeedForward4Layers();
-    testRandomize();
-    testSetLayer();
-    testFeedForwardSetLayers();
-    testTrainWithXor();
-    testTrainWithAnd();
-    testTrainWithXorMultipleLayers();
-    testToJsonString();
-    testFromJsonString();
-    testEquals();
+    // testConstrutor();
+    // testValidateWeights();
+    // testValidateBiases();
+    // testSetWeights();
+    // testFeedForward3Layers();
+    // testFeedForward4Layers();
+    // testRandomize();
+    // testSetLayer();
+    // testFeedForwardSetLayers();
+     testTrainWithXor();
+    // testTrainWithAnd();
+    // testTrainWithXorMultipleLayers();
+    // testToJsonString();
+    // testFromJsonString();
+    // testEquals();
+    // testTrainBatch();
+    testBackPropagation();
+}
+
+function testBackPropagation(){
+    console.log("\n\t Test backpropagation");
+    let nn1 = new NeuralNetwork(2,2,2);
+    let nn2 = new NeuralNetwork(2,2,2);
+    let data: WaBData = {
+        weights: [
+            Matrix.load([
+                [-0.3,0.2],
+                [0.5,-1]
+            ]),
+            Matrix.load([
+                [0.2,0.3],
+                [-0.5,0.4],
+            ])
+        ],
+        biases: [
+            Matrix.fromArray([0.3,-0.2]),
+            Matrix.fromArray([-0.7,0.6])
+        ]
+    };
+    nn1.set(data);
+    nn2.set(data);
+
+    assertNeuralNetworkEquals(nn1,nn2);
+    //instantiate NN1 and NN2. They should have the same weights and biases
+    //declare inputs and expected
+    let inputs = [1,0];
+    let expected = [0,1];
+    let outputs = nn1.feedForward(inputs);
+    //calculate layer 1 weight and biases deltas for given inputs and expected
+        //calculate error
+        let error = Matrix.sub(Matrix.fromArray(expected),Matrix.fromArray(outputs));
+        let gradients = Matrix.map(nn1.layers[2],(v)=>v*(1-v));
+        gradients = Matrix.hadamard(gradients,error);
+        gradients = Matrix.multScalar(gradients,nn1.learningRate);
+        let weight1Deltas = Matrix.mult(gradients,Matrix.transpose(nn1.layers[1]));
+        let bias1Deltas = gradients;
+
+        //nn1.weights[1] = Matrix.add(nn1.weights[1],weight1Deltas);
+        //nn1.biases[1] = Matrix.add(nn1.biases[1],bias1Deltas);
+
+        //weight1Deltas.print("weight 1 deltas");
+        // bias1Deltas.print("bias 1 deltas");
+        //add them to nN
+        
+        //calculate layer 2 weights and biases deltas for given inputs and expected
+        
+        //calculate error
+        error = Matrix.mult(Matrix.transpose(nn1.weights[1]), error);
+        //calculate gradients
+        gradients = Matrix.map(nn1.layers[1],v=>v*(1-v));
+        gradients = Matrix.hadamard(gradients,error);
+        gradients = Matrix.multScalar(gradients,nn1.learningRate);
+        
+        let weight0Deltas = Matrix.mult(gradients,Matrix.transpose(nn1.layers[0]));
+        weight0Deltas.print("weights0 deltas outside");
+        let bias0Deltas = gradients;
+        
+        nn1.weights[1].add(weight1Deltas);
+        nn1.biases[1].add(bias1Deltas);
+        nn1.weights[0].add(weight0Deltas);
+        nn1.biases[0].add(bias0Deltas);
+        nn2.train(inputs,expected);
+
+        // nn2.train(inputs,expected);
+         assertMatrixEquals(nn2.weights[0],nn1.weights[0])
+         assertMatrixEquals(nn2.weights[1],nn1.weights[1])
+         assertMatrixEquals(nn2.biases[0],nn1.biases[0])
+         assertMatrixEquals(nn2.biases[1],nn1.biases[1])
+        //weight0Deltas.print("weight 0 deltas");
+        //bias0Deltas.print("bias 0 deltas");
+        
+    //add delas to weights
+
+    //test if neural networks are the same
+
+    assertNeuralNetworkEquals(nn1,nn2)
+}   
+
+
+
+
+function testTrainBatch(){
+    console.log("\n\tTest train batch");
+
+    let trainingData = [
+        {
+            input: [0, 0],
+            output: [0]
+        },
+        {
+            input: [1, 1],
+            output: [0]
+        },
+        {
+            input: [0, 1],
+            output: [1]
+        },
+        {
+            input: [1, 0],
+            output: [1]
+        }
+    ]
+    let trainingInstances = [];
+    for(let i = 0; i < 5000;i++){
+        trainingInstances.push(pickRandom(trainingData));
+    }
+
+    let nn = new NeuralNetwork(2,3,4,1);
+
+    nn.trainInBatch(trainingInstances,0);
+
+    
+    Matrix.fromArray(nn.feedForward([1, 0])).print("1 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 0])).print("0 XOR 0");
+    Matrix.fromArray(nn.feedForward([0, 1])).print("0 XOR 1");
+    Matrix.fromArray(nn.feedForward([1, 1])).print("1 XOR 1");
 }
 
 function testEquals(){
