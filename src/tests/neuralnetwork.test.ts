@@ -1,8 +1,10 @@
-import NeuralNetwork from '../neuralnetwork.js';
+import NeuralNetwork, { TrainingInstance } from '../neuralnetwork.js';
 import { WaBData } from '../neuralnetwork.js';
 import Matrix from "../matrix.js";
 import { sigmoid, pickRandom } from "../utilitary.js";
 import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals, assertNeuralNetworkEquals } from "./assertions.js";
+
+testTrainInBatch();
 
 export function runNeuralNetworkTests() {
     console.log("\n%cNEURAL NETWORK TESTS\n", "color:#f3c131");
@@ -13,7 +15,7 @@ export function runNeuralNetworkTests() {
     // testFeedForward3Layers();
     // testFeedForward4Layers();
     // testRandomize();
-    // testSetLayer();
+     testSetLayer();
     // testFeedForwardSetLayers();
      testTrainWithXor();
     // testTrainWithAnd();
@@ -22,7 +24,188 @@ export function runNeuralNetworkTests() {
     // testFromJsonString();
     // testEquals();
     // testTrainBatch();
-    testBackPropagation();
+    //testBackPropagation();
+    testCalculateDeltas();
+    testTrainInBatch()
+}
+
+function testTrainInBatch(){
+    console.log("\n\t Test trainInBatch");
+
+    let initialWaB: WaBData = {
+        weights: [
+            Matrix.load([
+                [-0.3,0.2],
+                [0.5,-1]
+            ]),
+            Matrix.load([
+                [0.2,0.3],
+                [-0.5,0.4],
+            ])
+        ],
+        biases: [
+            Matrix.fromArray([0.3,-0.2]),
+            Matrix.fromArray([-0.7,0.6])
+        ]
+    };
+
+    //create nn
+    let nn1 = new NeuralNetwork(2,2,2); //training in batch
+    let nn2 = new NeuralNetwork(2,2,2); //calc deltas and then compare
+
+    //set initial WaB to be the same
+    nn1.set(initialWaB);
+    nn2.set(initialWaB);
+
+    //at this point nn1 and nn2 should be equals
+    assertNeuralNetworkEquals(nn1,nn2);
+
+    //declare 4 training instances
+    let trainingInstances: TrainingInstance [] = [
+        {
+            input: [0.12,-0.03],
+            output: [1,0],
+        },
+        {
+            input: [0.034,-0.12],
+            output: [1,0],
+        },
+        {
+            input: [0.2434,-0.76],
+            output: [0,1],
+        },
+        {
+            input: [-0.23,-0.65],
+            output: [0,1],
+        }
+    ]
+
+    // test batchsize = 0, 1, 2, 4
+    let batchSize = 0;
+
+    //batchsize 0 --> nothing should happen
+    nn1.trainInBatch(trainingInstances,0);
+    assertNeuralNetworkEquals(nn1,nn2);
+
+    //batchsize 1 --> stochastic gradient descent
+    batchSize = 1;
+        //calculate deltas, imediately adjust
+    trainingInstances.forEach(ti=>{
+        let deltas = nn2.calculateDeltas(ti.input,ti.output);
+        nn2.adjustWeightsAndBiases(deltas);
+    })
+        //after train in batch, nn1 and nn2 should be equal
+    //nn2.trainInBatch(trainingInstances,batchSize);
+
+    assertNeuralNetworkEquals(nn1,nn2);
+    
+    //batchsize 2 --> calculate average deltas of first two
+    batchSize = 2;
+        //adjust wab. cakc average last two, adjust. compare with train in batch
+    let count = 0;
+    let avg = nn1.getZeroedWaB();
+    trainingInstances.forEach(ti=>{
+        count ++;
+        let current = nn1.calculateDeltas(ti.input,ti.output);
+        for(let j = 0; j < current.weights.length;j++){
+            avg.weights[j].add(current.weights[j]);
+            avg.biases[j].add(current.biases[j]);
+        }
+        if(count == batchSize){
+            avg.weights = avg.weights.map(w=> Matrix.multScalar(w,1/batchSize))
+            avg.biases = avg.biases.map(b=> Matrix.multScalar(b,1/batchSize))
+            nn1.adjustWeightsAndBiases(avg);
+            avg = nn1.getZeroedWaB();
+        }
+    })
+
+    nn2.trainInBatch(trainingInstances,batchSize);
+    assertNeuralNetworkEquals(nn1,nn2);
+    
+    //batchsize 4 --> average of all the TI. adjust wab compare
+    batchSize = 4;
+
+    avg = nn1.getZeroedWaB();
+    trainingInstances.forEach(ti=>{
+        let current = nn1.calculateDeltas(ti.input,ti.output);
+        for(let j = 0; j < current.weights.length;j++){
+            avg.weights[j].add(current.weights[j]);
+            avg.biases[j].add(current.biases[j]);
+        }
+    })
+    avg.weights = avg.weights.map(w=> Matrix.multScalar(w,1/batchSize))
+    avg.biases = avg.biases.map(b=> Matrix.multScalar(b,1/batchSize))
+    nn1.adjustWeightsAndBiases(avg);
+
+    nn2.trainInBatch(trainingInstances,4);
+
+    assertNeuralNetworkEquals(nn1,nn2);
+
+}
+
+function testCalculateDeltas(){
+    let nn1 = new NeuralNetwork(2,2,2);
+    let initialData: WaBData = {
+        weights: [
+            Matrix.load([
+                [-0.3,0.2],
+                [0.5,-1]
+            ]),
+            Matrix.load([
+                [0.2,0.3],
+                [-0.5,0.4],
+            ])
+        ],
+        biases: [
+            Matrix.fromArray([0.3,-0.2]),
+            Matrix.fromArray([-0.7,0.6])
+        ]
+    };
+    nn1.set(initialData);
+
+    //instantiate NN1 and NN2. They should have the same weights and biases
+    //declare inputs and expected
+    let inputs = [1,0];
+    let expectedOutputs = [0,1];
+    let actualOutputs = nn1.feedForward(inputs);
+    //calculate layer 1 weight and biases deltas for given inputs and expected
+        //calculate error
+        let error = Matrix.sub(Matrix.fromArray(expectedOutputs),Matrix.fromArray(actualOutputs));
+        let gradients = Matrix.map(nn1.layers[2],(v)=>v*(1-v));
+        gradients = Matrix.hadamard(gradients,error);
+        gradients = Matrix.multScalar(gradients,nn1.learningRate);
+        let weight1Deltas = Matrix.mult(gradients,Matrix.transpose(nn1.layers[1]));
+        let bias1Deltas = gradients;
+
+        //nn1.weights[1] = Matrix.add(nn1.weights[1],weight1Deltas);
+        //nn1.biases[1] = Matrix.add(nn1.biases[1],bias1Deltas);
+
+        //weight1Deltas.print("weight 1 deltas");
+        // bias1Deltas.print("bias 1 deltas");
+        //add them to nN
+        
+        //calculate layer 2 weights and biases deltas for given inputs and expected
+        
+        //calculate error
+        error = Matrix.mult(Matrix.transpose(nn1.weights[1]), error);
+        //calculate gradients
+        gradients = Matrix.map(nn1.layers[1],v=>v*(1-v));
+        gradients = Matrix.hadamard(gradients,error);
+        gradients = Matrix.multScalar(gradients,nn1.learningRate);
+        
+        let weight0Deltas = Matrix.mult(gradients,Matrix.transpose(nn1.layers[0]));
+        weight0Deltas.print("weights0 deltas outside");
+        let bias0Deltas = gradients;
+
+        let expected: WaBData = {
+            weights: [weight0Deltas,weight1Deltas],
+            biases: [bias0Deltas,bias1Deltas],
+        }
+
+        let result = nn1.calculateDeltas(inputs,expectedOutputs);
+
+        expected.weights.forEach((w,i)=>assertMatrixEquals(w,result.weights[i]))
+        expected.biases.forEach((b,i)=>assertMatrixEquals(b,result.biases[i]))
 }
 
 function testBackPropagation(){

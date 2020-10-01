@@ -1,6 +1,6 @@
 import NeuralNetwork from "./neuralnetwork.js";
-import Matrix from "./matrix.js";
-import { maxIndex } from "./utilitary.js";
+
+console.log("Yomama")
 function create(...layerSizes: number[]): NeuralNetwork{
     return new NeuralNetwork(...layerSizes);
 }
@@ -13,5 +13,4 @@ function fromJsonString(str:string):NeuralNetwork{
 export {
     fromJsonString,
     create,
-    maxIndex
 };

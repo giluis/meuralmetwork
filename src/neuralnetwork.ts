@@ -95,17 +95,64 @@ export default class NeuralNetwork {
         }
     }
 
-    trainInBatch(trainingInstances: TestExample[], batchSize: number): void {
+    trainInBatch(trainingInstances: TrainingInstance[], batchSize: number): void {
+        let avgDeltas: WaBData = this.getZeroedWaB();
+        let count = 0;
+        let current: WaBData;
+
+        if(batchSize === 0)
+            return;
         
+        trainingInstances.forEach((ti)=>{
+            count++;
+            current = this.calculateDeltas(ti.input,ti.output);
+            for(let j = 0; j < current.weights.length;j++){
+                avgDeltas.weights[j].add(current.weights[j]);
+                avgDeltas.biases[j].add(current.biases[j]);
+            }
+
+            if(count === batchSize){
+                
+                avgDeltas.weights = avgDeltas.weights.map(w=>{
+                    return Matrix.multScalar(w,1/batchSize);
+                })
+                avgDeltas.biases = avgDeltas.biases.map(w=>{
+                    return Matrix.multScalar(w,1/batchSize);
+                })
+
+                this.adjustWeightsAndBiases(avgDeltas);
+                avgDeltas = this.getZeroedWaB();
+                count = 0;
+            }
+        })
+
     }
 
+
+
+    adjustWeightsAndBiases(data:WaBData):void{
+        for(let i = 0; i < data.weights.length;i++){
+            this.weights[i].add(data.weights[i]);
+            this.biases[i].add(data.biases[i]);
+        }
+    }
+
+    /**
+     * Returns a WaBData with all the weights set to zero
+     */
+    getZeroedWaB():WaBData {
+        return {
+            weights: this.weights.map(w=>Matrix.map(w,v=>0)),
+            biases: this.biases.map(b=>Matrix.map(b,v=>0)),
+        }
+    }
 
     /**
      * Calculates accuracy of neural network (num correct/total)
      * @param examples 
      */
-    calcAccuracy(examples: TestExample[]): number {
-        let numCorrect = examples.reduce((acc: number, cur: TestExample, i: number) => {
+    calcAccuracy(examples: TrainingInstance[]): number {
+        let numCorrect = examples.reduce((acc: number, cur: TrainingInstance, i: number) => {
             let guess = this.feedForward(cur.input);
             if (maxIndex(guess) === maxIndex(cur.output)) {
                 return acc + 1;
@@ -114,29 +161,6 @@ export default class NeuralNetwork {
         }, 0)
 
         return numCorrect / examples.length;
-    }
-
-    /**
-     * 
-     * @param guess Matriz que representa o guess da NN
-     * @param expected  Matriz que representa o resultado esperado
-     * @param layerIndex Índice da camada da qual <em>partem</em> as ligações que estão a ser alteradas
-     */
-
-    calcWeightDeltas(guess: Matrix, expected: Matrix, layer: Matrix, learningRate: number): Matrix {
-        debugger;
-        let error_output = Matrix.sub(expected, guess);
-        let transposed = Matrix.transpose(layer);
-        return Matrix.mult(
-            Matrix.map(
-                Matrix.mult(
-                    error_output,
-                    Matrix.map(guess, (v) => v * (1 - v))
-                ),
-                (v) => v * learningRate
-            )
-            , transposed
-        );
     }
 
 
@@ -327,7 +351,7 @@ export interface WaBData {
     biases: Matrix[],
 }
 
-export interface TestExample {
+export interface TrainingInstance {
     input: number[],
     output: number[]
 }
