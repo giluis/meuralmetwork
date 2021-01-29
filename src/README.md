@@ -16,6 +16,4 @@ All of this is written in typescript, which is a superset of javascript that all
 
 
 ## Testing
-
-
-Testing is paramount in these kind of __mathy__ projects. I [tested matrix.ts and neuralnetwork.ts extensively (enough, I hope)](./tests/README.md).
+Testing is paramount in these kind of __mathy__ projects. I [tested matrix.ts and neuralnetwork.ts extensively](./tests) (enough, I hope).
