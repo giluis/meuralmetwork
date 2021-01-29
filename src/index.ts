@@ -8,7 +8,7 @@ function fromJsonString(str:string):NeuralNetwork{
     return NeuralNetwork.fromJsonString(str);
 }
 
-export {
+export {https://registry.npmjs.org/meuralmetwork
     fromJsonString,
     create,
 };
