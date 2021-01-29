@@ -1,6 +1,6 @@
 {
   "name": "meuralmetwork",
-  "version": "2.8.7",
+  "version": "2.8.9",
   "description": "modelling a neural network ",
   "main": "built/index.js",
   "types": "built/index.d.ts",
