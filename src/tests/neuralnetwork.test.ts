@@ -1,19 +1,17 @@
-import NeuralNetwork, { TrainingInstance } from '../neuralnetwork.js';
-import { WaBData } from '../neuralnetwork.js';
-import Matrix from "../matrix.js";
-import { sigmoid, pickRandom } from "../utilitary.js";
-import { fail, assertMatrixEquals, assertFalse, assertTrue, assertArrayEquals, assertNumEquals, assertStringEquals, assertNeuralNetworkEquals } from "./assertions.js";
-import { ITestClass } from './testinterface.js';
+import NeuralNetwork, { TrainingInstance } from '../neuralnetwork.ts';
+import { WaBData } from '../neuralnetwork.ts';
+import { Matrix,matrix, Tocko} from "../deps.ts";
+import { sigmoid} from "../utilitary.ts";
 
+const {suite,test,fail,assert,assertEquals,assertArrayEquals} = Tocko;
 
-export default class NeuralNetworkTests implements ITestClass {
+function assertFalse(condition:boolean,msg:string="Should be false"){
+    assert(!condition,msg);
+}
 
-    header(): string{
-        return "==== Neural Network Tests ====";
-    }
-    testTrainInBatch() {
-
-        let initialWaB: WaBData = {
+suite("Train in batch",() =>{
+    test("batch size = 1",()=>{
+        const initialWaB: WaBData = {
             weights: [
                 Matrix.load([
                     [-0.3, 0.2],
@@ -31,18 +29,18 @@ export default class NeuralNetworkTests implements ITestClass {
         };
 
         //create nn
-        let nn1 = new NeuralNetwork(2, 2, 2); //training in batch
-        let nn2 = new NeuralNetwork(2, 2, 2); //calc deltas and then compare
+        const nn1 = new NeuralNetwork(2, 2, 2); //training in batch
+        const nn2 = new NeuralNetwork(2, 2, 2); //calc deltas and then compare
 
         //set initial WaB to be the same
         nn1.set(initialWaB);
         nn2.set(initialWaB);
 
         //at this point nn1 and nn2 should be equals
-        assertNeuralNetworkEquals(nn1, nn2);
+        assertEquals(nn1, nn2);
 
         //declare 4 training instances
-        let trainingInstances: TrainingInstance[] = [
+        const trainingInstances: TrainingInstance[] = [
             {
                 input: [0.12, -0.03],
                 output: [1, 0],
@@ -62,26 +60,116 @@ export default class NeuralNetworkTests implements ITestClass {
         ]
 
         // test batchsize = 0, 1, 2, 4
-        let batchSize = 0;
+        const batchSize = 0;
 
         //batchsize 0 --> nothing should happen
-        nn1.trainInBatch(trainingInstances, 0);
-        assertNeuralNetworkEquals(nn1, nn2);
+        nn1.trainInBatch(trainingInstances, batchSize);
+        assertEquals(nn1, nn2);
 
+    })
+
+    test("batchsize = 1",()=>{
+        const trainingInstances: TrainingInstance[] = [
+            {
+                input: [0.12, -0.03],
+                output: [1, 0],
+            },
+            {
+                input: [0.034, -0.12],
+                output: [1, 0],
+            },
+            {
+                input: [0.2434, -0.76],
+                output: [0, 1],
+            },
+            {
+                input: [-0.23, -0.65],
+                output: [0, 1],
+            }
+        ]
+
+        const initialWaB: WaBData = {
+            weights: [
+                Matrix.load([
+                    [-0.3, 0.2],
+                    [0.5, -1]
+                ]),
+                Matrix.load([
+                    [0.2, 0.3],
+                    [-0.5, 0.4],
+                ])
+            ],
+            biases: [
+                Matrix.fromArray([0.3, -0.2]),
+                Matrix.fromArray([-0.7, 0.6])
+            ]
+        };
+
+        //create nn
+        const nn1 = new NeuralNetwork(2, 2, 2); //training in batch
+        const nn2 = new NeuralNetwork(2, 2, 2); //calc deltas and then compare
+        nn1.set(initialWaB);
+        nn2.set(initialWaB);
+        // test batchsize = 0, 1, 2, 4
         //batchsize 1 --> stochastic gradient descent
-        batchSize = 1;
+        const batchSize = 1;
         //calculate deltas, imediately adjust
         trainingInstances.forEach(ti => {
             let deltas = nn2.calculateDeltas(ti.input, ti.output);
             nn2.adjustWeightsAndBiases(deltas);
         })
         //after train in batch, nn1 and nn2 should be equal
-        //nn2.trainInBatch(trainingInstances,batchSize);
+        nn2.trainInBatch(trainingInstances,batchSize);
 
-        assertNeuralNetworkEquals(nn1, nn2);
+        assertEquals(nn1, nn2);
+    })
+
+    test("batchsize = 2",()=>{
+
+        const trainingInstances: TrainingInstance[] = [
+            {
+                input: [0.12, -0.03],
+                output: [1, 0],
+            },
+            {
+                input: [0.034, -0.12],
+                output: [1, 0],
+            },
+            {
+                input: [0.2434, -0.76],
+                output: [0, 1],
+            },
+            {
+                input: [-0.23, -0.65],
+                output: [0, 1],
+            }
+        ]
+
+        const initialWaB: WaBData = {
+            weights: [
+                Matrix.load([
+                    [-0.3, 0.2],
+                    [0.5, -1]
+                ]),
+                Matrix.load([
+                    [0.2, 0.3],
+                    [-0.5, 0.4],
+                ])
+            ],
+            biases: [
+                Matrix.fromArray([0.3, -0.2]),
+                Matrix.fromArray([-0.7, 0.6])
+            ]
+        };
+
+        //create nn
+        const nn1 = new NeuralNetwork(2, 2, 2); //training in batch
+        const nn2 = new NeuralNetwork(2, 2, 2); //calc deltas and then compare
+        nn1.set(initialWaB);
+        nn2.set(initialWaB);
 
         //batchsize 2 --> calculate average deltas of first two
-        batchSize = 2;
+        const batchSize = 2;
         //adjust wab. cakc average last two, adjust. compare with train in batch
         let count = 0;
         let avg = nn1.getZeroedWaB();
@@ -93,20 +181,65 @@ export default class NeuralNetworkTests implements ITestClass {
                 avg.biases[j].add(current.biases[j]);
             }
             if (count == batchSize) {
-                avg.weights = avg.weights.map(w => Matrix.multScalar(w, 1 / batchSize))
-                avg.biases = avg.biases.map(b => Matrix.multScalar(b, 1 / batchSize))
+                avg.weights = avg.weights.map(( w:Matrix ) =>  w.multScalar(1 / batchSize))
+                avg.biases = avg.biases.map(( b:Matrix ) =>  b.multScalar(1 / batchSize))
                 nn1.adjustWeightsAndBiases(avg);
                 avg = nn1.getZeroedWaB();
             }
         })
 
         nn2.trainInBatch(trainingInstances, batchSize);
-        assertNeuralNetworkEquals(nn1, nn2);
+        assertEquals(nn1, nn2);
+    })
 
+    test("batchsize = 4",()=>{
+
+        const trainingInstances: TrainingInstance[] = [
+                {
+                input: [0.12, -0.03],
+                output: [1, 0],
+            },
+            {
+                input: [0.034, -0.12],
+                output: [1, 0],
+            },
+            {
+                input: [0.2434, -0.76],
+                output: [0, 1],
+            },
+            {
+                input: [-0.23, -0.65],
+                output: [0, 1],
+            }
+        ]
+
+        const initialWaB: WaBData = {
+            weights: [
+                Matrix.load([
+                    [-0.3, 0.2],
+                    [0.5, -1]
+                ]),
+                Matrix.load([
+                    [0.2, 0.3],
+                    [-0.5, 0.4],
+                ])
+            ],
+            biases: [
+                Matrix.fromArray([0.3, -0.2]),
+                Matrix.fromArray([-0.7, 0.6])
+            ]
+        };
+
+        //create nn
+        const nn1 = new NeuralNetwork(2, 2, 2); //training in batch
+        const nn2 = new NeuralNetwork(2, 2, 2); //calc deltas and then compare
+        nn1.set(initialWaB);
+        nn2.set(initialWaB);
         //batchsize 4 --> average of all the TI. adjust wab compare
-        batchSize = 4;
 
-        avg = nn1.getZeroedWaB();
+        const batchSize = 4;
+
+        const avg = nn1.getZeroedWaB();
         trainingInstances.forEach(ti => {
             let current = nn1.calculateDeltas(ti.input, ti.output);
             for (let j = 0; j < current.weights.length; j++) {
@@ -114,18 +247,20 @@ export default class NeuralNetworkTests implements ITestClass {
                 avg.biases[j].add(current.biases[j]);
             }
         })
-        avg.weights = avg.weights.map(w => Matrix.multScalar(w, 1 / batchSize))
-        avg.biases = avg.biases.map(b => Matrix.multScalar(b, 1 / batchSize))
+        avg.weights = avg.weights.map(( w:Matrix ) =>  w.multScalar(1 / batchSize))
+        avg.biases = avg.biases.map(( b:Matrix ) =>  b.multScalar(1 / batchSize))
         nn1.adjustWeightsAndBiases(avg);
 
         nn2.trainInBatch(trainingInstances, 4);
 
-        assertNeuralNetworkEquals(nn1, nn2);
+        assertEquals(nn1, nn2);
+    })
+})
 
-    }
 
-    testCalculateDeltas() {
-        let nn1 = new NeuralNetwork(2, 2, 2);
+suite("Calculate deltas",() =>{
+    test("valid data",()=>{
+        let nn1:NeuralNetwork = new NeuralNetwork(2, 2, 2);
         let initialData: WaBData = {
             weights: [
                 Matrix.load([
@@ -151,11 +286,11 @@ export default class NeuralNetworkTests implements ITestClass {
         let actualOutputs = nn1.feedForward(inputs);
         //calculate layer 1 weight and biases deltas for given inputs and expected
         //calculate error
-        let error = Matrix.sub(Matrix.fromArray(expectedOutputs), Matrix.fromArray(actualOutputs));
-        let gradients = Matrix.map(nn1.layers[2], (v) => v * (1 - v));
-        gradients = Matrix.hadamard(gradients, error);
-        gradients = Matrix.multScalar(gradients, nn1.learningRate);
-        let weight1Deltas = Matrix.mult(gradients, Matrix.transpose(nn1.layers[1]));
+        let error =  matrix(expectedOutputs).sub(matrix(actualOutputs));
+        let gradients = nn1.layers[2].map(v=> v * (1 - v));
+        gradients =  gradients.hadamard(error);
+        gradients =  gradients.multScalar(nn1.learningRate);
+        let weight1Deltas =  gradients.mult( nn1.layers[1].transpose());
         let bias1Deltas = gradients;
 
         //nn1.weights[1] = Matrix.add(nn1.weights[1],weight1Deltas);
@@ -168,13 +303,13 @@ export default class NeuralNetworkTests implements ITestClass {
         //calculate layer 2 weights and biases deltas for given inputs and expected
 
         //calculate error
-        error = Matrix.mult(Matrix.transpose(nn1.weights[1]), error);
+        error =   nn1.weights[1].transpose().mult(error);
         //calculate gradients
-        gradients = Matrix.map(nn1.layers[1], v => v * (1 - v));
-        gradients = Matrix.hadamard(gradients, error);
-        gradients = Matrix.multScalar(gradients, nn1.learningRate);
+        gradients =  nn1.layers[1].map(v=> v * (1 - v));
+        gradients =  gradients.hadamard(error);
+        gradients =  gradients.multScalar(nn1.learningRate);
 
-        let weight0Deltas = Matrix.mult(gradients, Matrix.transpose(nn1.layers[0]));
+        let weight0Deltas =  gradients.mult( nn1.layers[0].transpose());
         let bias0Deltas = gradients;
 
         let expected: WaBData = {
@@ -184,11 +319,14 @@ export default class NeuralNetworkTests implements ITestClass {
 
         let result = nn1.calculateDeltas(inputs, expectedOutputs);
 
-        expected.weights.forEach((w, i) => assertMatrixEquals(w, result.weights[i]))
-        expected.biases.forEach((b, i) => assertMatrixEquals(b, result.biases[i]))
-    }
+        expected.weights.forEach((w:Matrix, i:number) => assertEquals(w, result.weights[i]))
+        expected.biases.forEach((b:Matrix, i:number) => assertEquals(b, result.biases[i]))
+    })
+});
 
-    testBackPropagation() {
+suite("Backpropagation",()=>{
+    test("Valid valus",()=>{
+
         let nn1 = new NeuralNetwork(2, 2, 2);
         let nn2 = new NeuralNetwork(2, 2, 2);
         let data: WaBData = {
@@ -210,7 +348,7 @@ export default class NeuralNetworkTests implements ITestClass {
         nn1.set(data);
         nn2.set(data);
 
-        assertNeuralNetworkEquals(nn1, nn2);
+        assertEquals(nn1, nn2);
         //instantiate NN1 and NN2. They should have the same weights and biases
         //declare inputs and expected
         let inputs = [1, 0];
@@ -218,11 +356,11 @@ export default class NeuralNetworkTests implements ITestClass {
         let outputs = nn1.feedForward(inputs);
         //calculate layer 1 weight and biases deltas for given inputs and expected
         //calculate error
-        let error = Matrix.sub(Matrix.fromArray(expected), Matrix.fromArray(outputs));
-        let gradients = Matrix.map(nn1.layers[2], (v) => v * (1 - v));
-        gradients = Matrix.hadamard(gradients, error);
-        gradients = Matrix.multScalar(gradients, nn1.learningRate);
-        let weight1Deltas = Matrix.mult(gradients, Matrix.transpose(nn1.layers[1]));
+        let error =  matrix(expected).sub(matrix(outputs));
+        let gradients =  nn1.layers[2].map(v => v * (1 - v));
+        gradients =  gradients.hadamard(error);
+        gradients =  gradients.multScalar(nn1.learningRate);
+        let weight1Deltas =  gradients.mult( nn1.layers[1].transpose());
         let bias1Deltas = gradients;
 
         //nn1.weights[1] = Matrix.add(nn1.weights[1],weight1Deltas);
@@ -235,13 +373,13 @@ export default class NeuralNetworkTests implements ITestClass {
         //calculate layer 2 weights and biases deltas for given inputs and expected
 
         //calculate error
-        error = Matrix.mult(Matrix.transpose(nn1.weights[1]), error);
+        error =   nn1.weights[1].transpose().mult(error);
         //calculate gradients
-        gradients = Matrix.map(nn1.layers[1], v => v * (1 - v));
-        gradients = Matrix.hadamard(gradients, error);
-        gradients = Matrix.multScalar(gradients, nn1.learningRate);
+        gradients =  nn1.layers[1].map(v=> v * (1 - v));
+        gradients =  gradients.hadamard(error);
+        gradients =  gradients.multScalar(nn1.learningRate);
 
-        let weight0Deltas = Matrix.mult(gradients, Matrix.transpose(nn1.layers[0]));
+        let weight0Deltas =  gradients.mult( nn1.layers[0].transpose());
         let bias0Deltas = gradients;
 
         nn1.weights[1].add(weight1Deltas);
@@ -251,10 +389,10 @@ export default class NeuralNetworkTests implements ITestClass {
         nn2.train(inputs, expected);
 
         // nn2.train(inputs,expected);
-        assertMatrixEquals(nn2.weights[0], nn1.weights[0])
-        assertMatrixEquals(nn2.weights[1], nn1.weights[1])
-        assertMatrixEquals(nn2.biases[0], nn1.biases[0])
-        assertMatrixEquals(nn2.biases[1], nn1.biases[1])
+        assertEquals(nn2.weights[0], nn1.weights[0])
+        assertEquals(nn2.weights[1], nn1.weights[1])
+        assertEquals(nn2.biases[0], nn1.biases[0])
+        assertEquals(nn2.biases[1], nn1.biases[1])
         //weight0Deltas.print("weight 0 deltas");
         //bias0Deltas.print("bias 0 deltas");
 
@@ -262,88 +400,22 @@ export default class NeuralNetworkTests implements ITestClass {
 
         //test if neural networks are the same
 
-        assertNeuralNetworkEquals(nn1, nn2)
-    }
+        assertEquals(nn1, nn2)
+    })
+})
 
 
 
+suite("testFromJsonString",()=> {
+    test("valid inputs",()=> {
 
-    testTrainBatch() {
-
-        let trainingData = [
-            {
-                input: [0, 0],
-                output: [0]
-            },
-            {
-                input: [1, 1],
-                output: [0]
-            },
-            {
-                input: [0, 1],
-                output: [1]
-            },
-            {
-                input: [1, 0],
-                output: [1]
-            }
-        ]
-        let trainingInstances = [];
-        for (let i = 0; i < 5000; i++) {
-            trainingInstances.push(pickRandom(trainingData));
-        }
-
-        let nn = new NeuralNetwork(2, 3, 4, 1);
-
-        nn.trainInBatch(trainingInstances, 0);
-    }
-
-    testEquals() {
-        //in all test cases, equals is tested both ways, to ensure it works both ways
-        const nn1 = new NeuralNetwork(2, 2, 1);
-
-        const nn2 = new NeuralNetwork(2, 2, 1);
-
-        nn2.setWeights(nn1.weights);
-        nn2.setBiases(nn1.biases);
-
-        assertTrue(nn1.equals(nn2), "neural networks with same numLayers, weights and biases should be equal");
-        assertTrue(nn2.equals(nn1), "neural networks with same numLayers, weights and biases should be equal");
-
-        //since weights are random, nn3 and nn1 will not be equal
-        const nn3 = new NeuralNetwork(2, 2, 1);
-
-
-        assertFalse(nn1.equals(nn3), "neural networks with same numLayers, but diferent weights and biases should be differnt");
-        assertFalse(nn3.equals(nn1), "neural networks with same numLayers, but diferent weights and biases should be differnt");
-
-
-        //since layer size is different, nn4 and nn1 will not be equal
-        const nn4 = new NeuralNetwork(2, 2, 3);
-
-        assertFalse(nn1.equals(nn4), "neural networks with different layerSizes should not be equal")
-        assertFalse(nn4.equals(nn1), "neural networks with different layerSizes should not be equal")
-
-
-        //since numLayers is different, nn5 and nn1 will not be equal
-        const nn5 = new NeuralNetwork(2, 2, 1, 4);
-        assertFalse(nn1.equals(nn5), "neural networks with different numLayers should not be equal")
-        assertFalse(nn5.equals(nn1), "neural networks with different numLayers should not be equal")
-
-
-        const somethingElse = "34534";
-
-        assertFalse(nn1.equals(somethingElse), "A neuralnetwork should only possibly be equal to other instances of NeuralNetwork")
-    }
-
-    testFromJsonString() {
         let nn = new NeuralNetwork(2, 2, 1);
         let weights = [
-            Matrix.load([
+            matrix([
                 [1, 1],
                 [1, 1]
             ]),
-            Matrix.load([[1, 2]])
+            matrix([[1, 2]])
         ];
         let biases = [
 
@@ -360,38 +432,39 @@ export default class NeuralNetworkTests implements ITestClass {
         let expected = weights[0];
         let result = fromJsonNN.weights[0];
 
-        assertMatrixEquals(expected, result);
+        assertEquals(expected, result);
 
 
         expected = weights[1];
         result = fromJsonNN.weights[1];
 
-        assertMatrixEquals(expected, result);
+        assertEquals(expected, result);
 
 
         expected = biases[0];
         result = fromJsonNN.biases[0];
 
-        assertMatrixEquals(expected, result);
+        assertEquals(expected, result);
 
 
         expected = biases[1];
         result = fromJsonNN.biases[1];
 
-        assertMatrixEquals(expected, result);
+        assertEquals(expected, result);
 
+    })
+})
 
+suite("testToJsonString",()=> {
+    test("Valid inputs",()=> {
 
-    }
-
-    testToJsonString() {
         let nn = new NeuralNetwork(2, 2, 3);
 
-        let w1 = Matrix.load([
+        let w1 = matrix([
             [1, 2],
             [4, 5]
         ])
-        let w2 = Matrix.load([
+        let w2 = matrix([
             [1, 2],
             [2, 3],
             [1, 2],
@@ -431,106 +504,28 @@ export default class NeuralNetworkTests implements ITestClass {
             ],
             layerSizes: [2, 2, 3]
         })
-
-        assertStringEquals(expected, result);
-
-    }
-
-    testTrainWithXorMultipleLayers() {
-        let nn = new NeuralNetwork(2, 5, 5, 4, 3, 2, 1);
-        let trainingData = [
-            {
-                inputs: [0, 0],
-                expected: [0]
-            },
-            {
-                inputs: [1, 1],
-                expected: [0]
-            },
-            {
-                inputs: [0, 1],
-                expected: [1]
-            },
-            {
-                inputs: [1, 0],
-                expected: [1]
-            }
-        ]
-
-        for (let i = 0; i < 500; i++) {
-            let sample = pickRandom(trainingData);
-            nn.train(sample.inputs, sample.expected);
-        }
-    }
+        assertEquals(expected, result);
+    })
+})
 
 
-    testTrainWithAnd() {
-        let nn = new NeuralNetwork(2, 1, 1);
-        let trainingData = [
-            {
-                inputs: [0, 0],
-                expected: [0]
-            },
-            {
-                inputs: [1, 1],
-                expected: [1]
-            },
-            {
-                inputs: [0, 1],
-                expected: [0]
-            },
-            {
-                inputs: [1, 0],
-                expected: [0]
-            }
-        ]
-
-        for (let i = 0; i < 50000; i++) {
-            let sample = pickRandom(trainingData);
-            nn.train(sample.inputs, sample.expected);
-        }
-    }
-
-    testTrainWithXor() {
-        let nn = new NeuralNetwork(2, 2, 1);
-        let trainingData = [
-            {
-                inputs: [0, 0],
-                expected: [0]
-            },
-            {
-                inputs: [1, 1],
-                expected: [0]
-            },
-            {
-                inputs: [0, 1],
-                expected: [1]
-            },
-            {
-                inputs: [1, 0],
-                expected: [1]
-            }
-        ]
-
-        for (let i = 0; i < 50000; i++) {
-            let sample = pickRandom(trainingData);
-            nn.train(sample.inputs, sample.expected);
-        }
-    }
 
 
-    testFeedForwardSetLayers() {
+
+
+suite("testFeedForwardSetLayers",()=> {
+    test("valid inputs",()=> {
         let data: WaBData = {
             weights: [
-                Matrix.load([
+                matrix([
                     [2, 0],
                     [1, 3]
                 ]),
-                Matrix.load([
+                matrix([
                     [1, 2],
                     [2, 1],
                 ]),
-                Matrix.load([
+                matrix([
                     [3, 2],
                 ])
             ],
@@ -545,58 +540,20 @@ export default class NeuralNetworkTests implements ITestClass {
         nn.set(data);
         let inputs = [1, 0];
 
-        let hidden1 = Matrix.map(Matrix.add(Matrix.mult(data.weights[0], Matrix.fromArray(inputs)), data.biases[0]), sigmoid);
-        let hidden2 = Matrix.map(Matrix.add(Matrix.mult(data.weights[1], hidden1), data.biases[1]), sigmoid);
-        let outputs = Matrix.fromArray(nn.feedForward(inputs));
+        let hidden1 =    data.weights[0].mult(matrix(inputs)).add(data.biases[0]).map(sigmoid);
+        let hidden2 =    data.weights[1].mult(hidden1).add(data.biases[1]).map(sigmoid);
+        let outputs = matrix(nn.feedForward(inputs));
 
-        assertMatrixEquals(Matrix.fromArray(inputs), nn.layers[0])
-        assertMatrixEquals(hidden1, nn.layers[1]);
-        assertMatrixEquals(hidden2, nn.layers[2]);
-        assertMatrixEquals(outputs, nn.layers[3]);
+        assertEquals(matrix(inputs), nn.layers[0])
+        assertEquals(hidden1, nn.layers[1]);
+        assertEquals(hidden2, nn.layers[2]);
+        assertEquals(outputs, nn.layers[3]);
 
-
-    }
-
-    testRandomize() {
-        let nn = new NeuralNetwork(2, 3, 4);
-        assertNumEquals(nn.weights[0].numRows, nn.layerSizes[1]);
-        assertNumEquals(nn.weights[1].numRows, nn.layerSizes[2]);
-        assertNumEquals(nn.biases[0].numRows, nn.layerSizes[1]);
-        assertNumEquals(nn.biases[1].numRows, nn.layerSizes[2]);
-    }
-
-    testSetLayer() {
-        let nn = new NeuralNetwork(2, 2, 1);
+    })
+    test("feed forward 4 layers",()=> {
         let data: WaBData = {
             weights: [
-                Matrix.load([
-                    [2, 0],
-                    [1, 3]
-                ]),
-                Matrix.load([[1, 0]]),
-            ],
-            biases: [
-                Matrix.fromArray([1, 1]),
-                Matrix.fromArray([2]),
-            ]
-        }
-
-        nn.set(data);
-
-
-        let expected = Matrix.load([
-            [2, 3],
-            [3, 3],
-        ])
-        nn.setLayer(1, expected);
-
-        assertMatrixEquals(expected, nn.layers[1]);
-    }
-
-    testFeedForward4Layers() {
-        let data: WaBData = {
-            weights: [
-                Matrix.load(
+                matrix(
                     [
                         [1, 2.3],
                         [0.1, -2],
@@ -604,14 +561,14 @@ export default class NeuralNetworkTests implements ITestClass {
                     ]
 
                 ),
-                Matrix.load(
+                matrix(
                     [
                         [3.1, 0.5, -3],
                         [1.5, -0.2, 0.95],
                         [1.7, 2.3, -2.8],
                         [1.3, 1.2, 0.3]
                     ]),
-                Matrix.load(
+                matrix(
                     [
                         [2.7, -3.1, 0.2, 0.3],
                         [0.8, 1.7, 3.8, -3]
@@ -635,45 +592,31 @@ export default class NeuralNetworkTests implements ITestClass {
 
         let inputs = [1, 3];
 
-        let l1 = Matrix.map(Matrix.add(Matrix.mult(weights[0], Matrix.fromArray(inputs)), biases[0]), sigmoid);
-        let l2 = Matrix.map(Matrix.add(Matrix.mult(weights[1], l1), biases[1]), sigmoid);
-        let o = Matrix.map(Matrix.add(Matrix.mult(weights[2], l2), biases[2]), sigmoid);
+        let l1 =    weights[0].mult(matrix(inputs)).add(biases[0]).map(sigmoid);
+        let l2 =    weights[1].mult(l1).add(biases[1]).map(sigmoid);
+        let o =    weights[2].mult(l2).add(biases[2]).map(sigmoid);
 
 
         nn.feedForward(inputs)
-        assertMatrixEquals(o, Matrix.fromArray(nn.feedForward(inputs)))
+        assertEquals(o, Matrix.fromArray(nn.feedForward(inputs)))
 
-    }
-    testValidateBiases() {
-        let nn = new NeuralNetwork(4, 3, 1);
-
-        let biases = [
-            Matrix.fromArray([1, 2, 3]),
-            Matrix.fromArray([2])
-        ]
-
-        assertTrue(nn.validateBiases(biases[0], 0), "Should return true");
-        assertTrue(nn.validateBiases(biases[1], 1), "Shoudl be true");
-
-    }
-
-
-    testFeedForward3Layers() {
+    })
+    test("feed forward 3 layers",()=> {
 
         let nn = new NeuralNetwork(4, 3, 1);
 
 
-        let l0 = Matrix.load([
+        let l0 = matrix([
             [-1.6, 7.3, -4, 0.8],
         ]);
 
         let weights = [
-            Matrix.load([
+            matrix([
                 [1.3, -0.44, 0.81, 7],
                 [7.1, 2, 1, -3.1],
                 [-0.18, 0.3, 2, 6]
             ]),
-            Matrix.load([
+            matrix([
                 [-1, 1, 2],
             ]),
         ]
@@ -684,14 +627,14 @@ export default class NeuralNetworkTests implements ITestClass {
         ]
 
         // let weights = [
-        //     Matrix.load(
+        //     matrix(
         //         [
         //             [1.3, -0.44, 0.81, 7],
         //             [7.1, 2, 1, -3.1],
         //             [-0.18, 0.3, 2, 6]
         //         ]
         //     ),
-        //     Matrix.load(
+        //     matrix(
         //         [
         //             [-1, 1,2],
         //         ]
@@ -703,11 +646,11 @@ export default class NeuralNetworkTests implements ITestClass {
         let inputs = [1, 2, 3, 4];
 
 
-        let l1 = Matrix.map(Matrix.add(Matrix.mult(weights[0], Matrix.fromArray(inputs)), biases[0]), sigmoid)
+        let l1 =    weights[0].mult(matrix(inputs)).add(biases[0]).map(sigmoid)
+        //let l1 = Matrix.map(Matrix.add(Matrix.mult(weights[0], Matrix.fromArray(inputs)), biases[0]), sigmoid)
 
-
-
-        let expected = Matrix.map(Matrix.add(Matrix.mult(weights[1], l1), biases[1]), sigmoid)
+        let expected =    weights[1].mult(l1).add(biases[1]).map(sigmoid)
+        //let expected = Matrix.map(Matrix.add(Matrix.mult(weights[1], l1), biases[1]), sigmoid)
 
 
 
@@ -716,20 +659,81 @@ export default class NeuralNetworkTests implements ITestClass {
 
         let result = nn.feedForward(inputs);
 
-        assertMatrixEquals(expected, Matrix.fromArray(result))
-    }
+        assertEquals(expected, Matrix.fromArray(result))
+    })
+})
 
-    testSetWeights() {
+suite("testRandomize",()=> {
+    test("Valid inputs",()=>{
+        let nn = new NeuralNetwork(2, 3, 4);
+        assertEquals(nn.weights[0].numRows, nn.layerSizes[1]);
+        assertEquals(nn.weights[1].numRows, nn.layerSizes[2]);
+        assertEquals(nn.biases[0].numRows, nn.layerSizes[1]);
+        assertEquals(nn.biases[1].numRows, nn.layerSizes[2]);
+    })
+})
 
+suite("testSetLayer",()=> {
+    test("Valid inputsl",()=>{
+
+        let nn = new NeuralNetwork(2, 2, 1);
+        let data: WaBData = {
+            weights: [
+                matrix([
+                    [2, 0],
+                    [1, 3]
+                ]),
+                matrix([[1, 0]]),
+            ],
+            biases: [
+                Matrix.fromArray([1, 1]),
+                Matrix.fromArray([2]),
+            ]
+        }
+
+        nn.set(data);
+
+
+        let expected = matrix([
+            [2, 3],
+            [3, 3],
+        ])
+        nn.setLayer(1, expected);
+
+        assertEquals(expected, nn.layers[1]);
+    })
+})
+
+suite("testValidateBiases",()=> {
+    test("valid biases",()=>{
+
+        let nn = new NeuralNetwork(4, 3, 1);
+
+        let biases = [
+            Matrix.fromArray([1, 2, 3]),
+            Matrix.fromArray([2])
+        ]
+
+        assert(nn.validateBiases(biases[0], 0), "Should return true");
+        assert(nn.validateBiases(biases[1], 1), "Shoudl be true");
+    })
+
+})
+
+
+
+suite("set weights",()=> {
+
+    test("valid weights",()=>{
         let nn = new NeuralNetwork(4, 3, 5);
 
         let weights = [
-            Matrix.load([
+            matrix([
                 [3, 2, 4, 5],
                 [4, 3, 5, 5],
                 [0.4, -1.5, 4, 3],
             ]),
-            Matrix.load([
+            matrix([
                 [1, 2, 3],
                 [4, 5, 3],
                 [5, 4, 3],
@@ -740,21 +744,22 @@ export default class NeuralNetworkTests implements ITestClass {
 
 
         try {
-
             nn.setWeights(weights);
-
+            return;
         } catch (e) {
             fail("Valid weights were passed as parameter, yet an exception was thrown")
         }
+    });
+    test("Invalid weights",()=> {
 
-
-        weights = [
-            Matrix.load([
+        let nn = new NeuralNetwork(4, 3, 5);
+        const weights = [
+            matrix([
                 [3, 2, 4, 5],
                 [4, 3, 5, 5],
                 [0.4, -1.5, 4, 3],
             ]),
-            Matrix.load([
+            matrix([
                 [1, 2, 3],
                 [4, 5, 3],
                 [5, 4, 3],
@@ -772,22 +777,22 @@ export default class NeuralNetworkTests implements ITestClass {
             return;
         }
 
+    })
+})
 
-
-    }
-
-    testValidateWeights() {
+suite("validate weights",()=> {
+    test("Invalid weights",()=>{
         let nn = new NeuralNetwork(3, 2, 1);
         let weights = [
-            Matrix.load([
+            matrix([
                 [1, 2],
                 [4, 5]
             ]),
-            Matrix.load([
+            matrix([
                 [1, 2, 3],
                 [4, 3, 5],
             ]),
-            Matrix.load([
+            matrix([
                 [1, 2]
             ])
         ]
@@ -796,19 +801,43 @@ export default class NeuralNetworkTests implements ITestClass {
         assertFalse(nn.validateWeights(weights[2], 0), "Not enough rows and columns");
         assertFalse(nn.validateWeights(weights[1], 1), "Too many columns and rows");
         assertFalse(nn.validateWeights(weights[0], 324567), "Should return false, invalid Index")
+    })
+
+    test("valid weights 1",()=>{
+
+        const nn = new NeuralNetwork(3, 2, 1);
+        const weights = [
+            matrix([
+                [1, 2],
+                [4, 5]
+            ]),
+            matrix([
+                [1, 2, 3],
+                [4, 3, 5],
+            ]),
+            matrix([
+                [1, 2]
+            ])
+        ]
 
 
-        assertTrue(nn.validateWeights(weights[1], 0), "Should return true, because correct number of columns and rows");
-        assertTrue(nn.validateWeights(weights[2], 1), "Should return true");
+
+        assert(nn.validateWeights(weights[1], 0), "Should return true, because correct number of columns and rows");
+        assert(nn.validateWeights(weights[2], 1), "Should return true");
 
 
-        weights = [
-            Matrix.load([
+    })
+    test("valid weights 2",()=>{
+
+        const nn = new NeuralNetwork(4, 3, 5);
+
+        const weights = [
+            matrix([
                 [3, 2, 4, 5],
                 [4, 3, 5, 5],
                 [0.4, -1.5, 4, 3],
             ]),
-            Matrix.load([
+            matrix([
                 [1, 2, 3],
                 [4, 5, 3],
                 [5, 4, 3],
@@ -817,20 +846,19 @@ export default class NeuralNetworkTests implements ITestClass {
             ])
         ]
 
-        nn = new NeuralNetwork(4, 3, 5);
 
+        assert(nn.validateWeights(weights[0], 0), "Shoudl be true, as wheights are valid");
+        assert(nn.validateWeights(weights[1], 1), "Shoudl be true, as wheights are valid1");
 
-        assertTrue(nn.validateWeights(weights[0], 0), "Shoudl be true, as wheights are valid");
-        assertTrue(nn.validateWeights(weights[1], 1), "Shoudl be true, as wheights are valid1");
+    })
+})
 
-    }
-
-    testConstrutor() {
+suite("testConstrutor",()=> {
+    test("Valid input",()=>{
         let nn = new NeuralNetwork(3, 2, 1);
-
         let expectedLayerSizes = [3, 2, 1];
         let expectedNumLayers = 3;
         assertArrayEquals(expectedLayerSizes, nn.layerSizes);
-        assertNumEquals(expectedNumLayers, nn.numLayers);
-    }
-}
+        assertEquals(expectedNumLayers, nn.numLayers);
+    })
+})

@@ -1,4 +1,4 @@
-import NeuralNetwork from "./neuralnetwork";
+import NeuralNetwork from "./neuralnetwork.ts";
 
 export const SIGMOID_FLATTENER = 1;
 
