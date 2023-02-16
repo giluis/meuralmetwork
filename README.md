@@ -1,16 +1,5 @@
-# meuralmetwork
+# meuralmetwork: A Neural Network in Typescript
 
-A toy neural network to help people learn more about the topic
+A neural network library to help people learn more about the inner workings of machine learning
 
-## Structure
-
-### src
-
-Contains the [src code](./src/README.md) in typescript.
-
---- 
-
-### build
-    
-Contains the [compiled javascript code](./built). It is not a good pratice to commit this, but I figured it would help people understand the process of compilation to javascript better. idk
-
+Check the tests for examples of usage.
